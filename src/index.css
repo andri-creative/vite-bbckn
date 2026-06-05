@@ -1,0 +1,189 @@
+@import "tailwindcss";
+
+:root {
+  --text: #374151;
+  --text-h: #0f172a;
+  --bg: #f8fafc;
+  --border: #cbd5e1;
+  --code-bg: #e2e8f0;
+  --accent: #0284c7; /* Sky Blue */
+  --accent-bg: rgba(2, 132, 199, 0.08);
+  --accent-border: rgba(2, 132, 199, 0.4);
+  --social-bg: rgba(241, 245, 249, 0.5);
+  --shadow:
+    rgba(0, 0, 0, 0.05) 0 10px 15px -3px, rgba(0, 0, 0, 0.02) 0 4px 6px -2px;
+
+  --grid-bg: #f0fdf4; /* Mint/Green tint */
+  --grid-line: rgba(16, 185, 129, 0.14); /* Soft emerald lines - increased opacity for desktop visibility */
+  --grid-vignette: #f0fdf4;
+  --grid-radial: radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+
+  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, Consolas, monospace;
+
+  font: 18px/145% var(--sans);
+  letter-spacing: 0.18px;
+  color-scheme: light dark;
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  transition: background-color 0.3s ease, color 0.3s ease;
+
+  view-transition-name: root;
+
+  @media (max-width: 1024px) {
+    font-size: 16px;
+  }
+}
+
+html.dark {
+  --text: #94a3b8;
+  --text-h: #f8fafc;
+  --bg: #03080c; /* Deep glowing ocean dark background (not plain black!) */
+  --border: #132533;
+  --code-bg: #0b141c;
+  --accent: #00f5ff; /* Glowing cyan */
+  --accent-bg: rgba(0, 245, 255, 0.12);
+  --accent-border: rgba(0, 245, 255, 0.4);
+  --social-bg: rgba(15, 23, 42, 0.5);
+  --shadow:
+    rgba(0, 0, 0, 0.6) 0 10px 15px -3px, rgba(0, 0, 0, 0.4) 0 4px 6px -2px;
+
+  --grid-bg: #03080c;
+  --grid-line: rgba(0, 245, 255, 0.12); /* Cyan lines - increased opacity for desktop visibility */
+  --grid-vignette: #03080c;
+  --grid-radial: radial-gradient(circle at 50% 50%, #0d283d 0%, #03080c 100%); /* Breathtaking glowing deep blue-green nebula center! */
+}
+
+#root {
+  max-width: 100%;
+  margin: 0 auto;
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100%;
+  overflow-x: clip;
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+html {
+  min-height: 100%;
+}
+
+/* Grid background */
+.grid-bg {
+  height: 100%;
+  width: 100%;
+  background-color: var(--grid-bg);
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+    var(--grid-radial);
+  background-size: 140px 140px, 140px 140px, cover;
+  background-repeat: repeat, repeat, no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: background-color 0.3s ease;
+}
+
+/* Fade vignette on edges */
+.grid-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 30%, var(--grid-vignette) 100%);
+  pointer-events: none;
+  z-index: 1;
+  transition: background 0.3s ease;
+}
+
+.grid-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  user-select: text;
+}
+
+.grid-content h1 {
+  font-size: clamp(2rem, 6vw, 5rem);
+  font-weight: 700;
+  color: var(--text-h);
+  letter-spacing: -0.03em;
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+@media (max-width: 640px) {
+  .grid-bg {
+    background-size: 80px 80px, 80px 80px, cover;
+  }
+}
+
+/* ============================================
+   View Transition — Split-screen theme wipe
+   Shows REAL UI content on both halves:
+     dark → light : dark left sweeps out, light right sweeps in
+     light → dark : light right sweeps out, dark left sweeps in
+   ============================================ */
+
+/* Disable the default cross-fade */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* ── dark → light ── */
+html.vt-from-dark::view-transition-old(root) {
+  animation: 1.4s cubic-bezier(0.77, 0, 0.18, 1) both vt-old-left;
+}
+html.vt-from-dark::view-transition-new(root) {
+  animation: 1.4s cubic-bezier(0.77, 0, 0.18, 1) both vt-new-right;
+}
+
+/* ── light → dark ── */
+html.vt-from-light::view-transition-old(root) {
+  animation: 1.4s cubic-bezier(0.77, 0, 0.18, 1) both vt-old-right;
+}
+html.vt-from-light::view-transition-new(root) {
+  animation: 1.4s cubic-bezier(0.77, 0, 0.18, 1) both vt-new-left;
+}
+
+/*
+  At ~35% both old (one half) and new (other half) are visible = SPLIT SCREEN!
+  After 35% → old shrinks away, new expands to full.
+*/
+
+@keyframes vt-old-left {
+  0%   { clip-path: inset(0 0 0 0); }
+  35%  { clip-path: inset(0 50% 0 0); }
+  100% { clip-path: inset(0 100% 0 0); }
+}
+@keyframes vt-new-right {
+  0%   { clip-path: inset(0 0 0 100%); }
+  35%  { clip-path: inset(0 0 0 50%); }
+  100% { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes vt-old-right {
+  0%   { clip-path: inset(0 0 0 0); }
+  35%  { clip-path: inset(0 0 0 50%); }
+  100% { clip-path: inset(0 0 0 100%); }
+}
+@keyframes vt-new-left {
+  0%   { clip-path: inset(0 100% 0 0); }
+  35%  { clip-path: inset(0 50% 0 0); }
+  100% { clip-path: inset(0 0 0 0); }
+}

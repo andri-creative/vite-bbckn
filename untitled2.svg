@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<svg width="18.2" height="46.493" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg"
+    version="1.1" xml:space="preserve">
+    <defs id="defs6">
+        <linearGradient id="linearGradient24" x1="0.5" x2="0.5" y1="1.03" y2="-0.23">
+            <stop id="stop26" offset="0" stop-color="#268c9f" />
+            <stop id="stop28" offset="0.26" stop-color="#267483" />
+            <stop id="stop30" offset="0.82" stop-color="#24373c" />
+            <stop id="stop32" offset="1" stop-color="#242224" />
+        </linearGradient>
+        <linearGradient id="linearGradient46" x1="0.5" x2="0.5" y1="1.03" y2="-0.23">
+            <stop id="stop48" offset="0" stop-color="#5ac28f" />
+            <stop id="stop50" offset="0.2" stop-color="#51a67c" />
+            <stop id="stop52" offset="0.65" stop-color="#395f4d" />
+            <stop id="stop54" offset="1" stop-color="#242224" />
+        </linearGradient>
+        <linearGradient id="linearGradient68" x1="0.5" x2="0.5" y1="0.82" y2="-0.22">
+            <stop id="stop70" offset="0" stop-color="#454d9f" />
+            <stop id="stop72" offset="0.26" stop-color="#3e4383" />
+            <stop id="stop74" offset="0.82" stop-color="#2a2a3c" />
+            <stop id="stop76" offset="1" stop-color="#242224" />
+        </linearGradient>
+    </defs>
+    <metadata>image/svg+xmlOpenclipart</metadata>
+    <g class="layer">
+        <title>Layer 1</title>
+        <g id="g10" transform="matrix(0.656253 0 0 -0.74677 -3.74315 53.6016)">
+            <g id="g12" transform="matrix(0.777205 0 0 1.58735 2.44419 18.5149)">
+                <g id="g14">
+                    <g id="g16">
+                        <g id="g22">
+                            <path
+                                d="m25.68,-2.75c-1.07,-0.31 -3.09,-0.38 -6.08,-0.19c0.36,1.78 0.09,3.65 -0.81,5.59c-1.79,3.89 -5.79,6.27 -11.99,7.13l2.68,-0.35c2.15,-0.35 4.18,-0.89 6.08,-1.6c5.97,-2.25 9.33,-5.78 10.11,-10.58z"
+                                fill="url(#linearGradient24)" fill-rule="evenodd" id="path34" />
+                        </g>
+                    </g>
+                </g>
+                <g id="g36">
+                    <g id="g38">
+                        <g id="g44">
+                            <path
+                                d="m37.49,-2.55c-0.6,-0.15 -1.41,-0.27 -2.42,-0.38c-2.04,-0.19 -3.96,-0.15 -5.81,0.09c0.36,4.04 0.09,8.3 -0.81,12.75c-1.79,8.88 -5.81,14.29 -12.08,16.23c3.22,-0.39 6.51,-1.89 9.84,-4.48c6.73,-5.2 10.49,-13.26 11.27,-24.21z"
+                                fill="url(#linearGradient46)" fill-rule="evenodd" id="path56" />
+                        </g>
+                    </g>
+                </g>
+                <g id="g58">
+                    <g id="g60">
+                        <g id="g66">
+                            <path
+                                d="m33.46,-2.59c-0.25,-0.1 -0.69,-0.19 -1.34,-0.25c-1.32,-0.12 -2.88,-0.11 -4.74,0.03c-0.36,2.41 -1.54,5.04 -3.58,7.88c-4.07,5.65 -10.35,9.52 -18.87,11.59c4.29,-0.61 8.7,-1.86 13.24,-3.74c9.06,-3.81 14.16,-8.99 15.3,-15.52z"
+                                fill="url(#linearGradient68)" fill-rule="evenodd" id="path78" />
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

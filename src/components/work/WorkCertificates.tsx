@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Icon } from '@iconify/react'
 import { motion, useTransform, AnimatePresence } from 'motion/react'
 import { useSectionProgress } from '../../hooks/useSectionProgress'
-import { CERTIFICATES } from '../../data/certificates'
+import { useAchievements } from '../../hooks/useAchievement'
 import { Link } from '@tanstack/react-router'
 import { CardBody, CardContainer, CardItem } from '../ui/3d-card'
 
@@ -11,13 +11,16 @@ export default function WorkCertificates() {
     const opacity = useTransform(progress, [0, 0.15, 0.85, 1], [0, 1, 1, 0])
     const y = useTransform(progress, [0, 0.2, 0.8, 1], [100, 0, 0, -100])
 
+    const { data: achievementsData } = useAchievements()
+    const achievements = achievementsData || []
+
     const [visibleCount, setVisibleCount] = useState(6)
     const [isLoading, setIsLoading] = useState(false)
 
-    const displayedCertificates = CERTIFICATES.slice(0, visibleCount)
+    const displayedCertificates = achievements.slice(0, visibleCount)
 
     const loadMore = () => {
-        if (isLoading || visibleCount >= CERTIFICATES.length) return
+        if (isLoading || visibleCount >= achievements.length) return
         setIsLoading(true)
         setTimeout(() => {
             setVisibleCount(prev => prev + 6)
@@ -32,8 +35,8 @@ export default function WorkCertificates() {
             className="relative w-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-8 py-32 overflow-hidden bg-[var(--bg)]"
         >
             <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-                <div className="absolute top-[30%] right-[10%] w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[120px] animate-pulse" style={{ animationDuration: '5s' }} />
-                <div className="absolute bottom-[20%] left-[10%] w-[600px] h-[600px] bg-yellow-500/10 rounded-full blur-[150px] animate-pulse" style={{ animationDuration: '7s' }} />
+                <div className="absolute top-[30%] right-[10%] w-[500px] h-[500px] bg-amber-500/10 rounded-full blur-[120px]" />
+                <div className="absolute bottom-[20%] left-[10%] w-[600px] h-[600px] bg-yellow-500/10 rounded-full blur-[150px]" />
             </div>
 
             <motion.div style={{ opacity, y }} className="max-w-[1400px] w-full relative z-10 flex flex-col gap-16">
@@ -58,14 +61,14 @@ export default function WorkCertificates() {
                 <div className="flex flex-col gap-12 w-full">
                     <motion.div layout className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 sm:gap-10">
                         <AnimatePresence mode="popLayout">
-                            {displayedCertificates.map((cert) => (
+                            {displayedCertificates.map((cert: any) => (
                                 <motion.div
                                     layout
                                     initial={{ opacity: 0, y: 50, scale: 0.95 }}
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.9, filter: 'blur(10px)' }}
                                     transition={{ duration: 0.5, type: 'spring', bounce: 0.3 }}
-                                    key={cert.id}
+                                    key={cert._id || cert.id}
                                     className="z-10 w-full h-full flex"
                                 >
                                     <CardContainer className="inter-var">
@@ -104,7 +107,7 @@ export default function WorkCertificates() {
                                                     translateZ={20}
                                                     as={Link}
                                                     to="/certificate/$id"
-                                                    params={{ id: cert.id }}
+                                                    params={{ id: cert.slug || cert._id }}
                                                     className="px-5 py-2.5 rounded-xl bg-amber-500 text-white text-xs font-black tracking-wider uppercase hover:shadow-[0_0_20px_rgba(245,158,11,0.5)] transition-shadow duration-300 flex items-center gap-2"
                                                 >
                                                     <Icon icon="ph:eye-bold" className="w-4 h-4" />
@@ -118,24 +121,13 @@ export default function WorkCertificates() {
                         </AnimatePresence>
                     </motion.div>
 
-                    {visibleCount < CERTIFICATES.length && (
+                    {visibleCount < achievements.length && (
                         <motion.div
                             onViewportEnter={loadMore}
                             viewport={{ margin: "100px" }}
                             className="w-full flex justify-center py-12"
                         >
-                            {isLoading ? (
-                                <motion.div
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    className="flex items-center gap-3 px-8 py-4 rounded-2xl bg-amber-500 text-white shadow-2xl"
-                                >
-                                    <Icon icon="ph:spinner-bold" className="w-5 h-5 animate-spin" />
-                                    <span className="text-xs font-black tracking-widest uppercase">Loading More...</span>
-                                </motion.div>
-                            ) : (
-                                <div className="h-10 w-full" />
-                            )}
+                            <div className="h-10 w-full" />
                         </motion.div>
                     )}
                 </div>

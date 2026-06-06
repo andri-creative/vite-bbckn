@@ -35,11 +35,7 @@ export default function AboutExperience() {
                     {/* Garis vertikal timeline */}
                     <div className="absolute left-[24px] md:left-1/2 -translate-x-1/2 top-2 bottom-2 w-[2px] bg-gradient-to-b from-[var(--border)] via-[var(--border)] to-transparent" />
 
-                    {isLoading ? (
-                        <div className="flex flex-col items-center justify-center py-10 w-full text-[var(--accent)]">
-                            <Icon icon="ph:spinner-bold" className="w-10 h-10 animate-spin" />
-                        </div>
-                    ) : experiences.map((exp: any, i: number) => {
+                    {experiences.map((exp: any, i: number) => {
                         const isEven = i % 2 === 0;
                         return (
                             <div key={exp._id || i} className="relative flex md:justify-center group">

@@ -1,16 +1,12 @@
 import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
-import Pusher from "pusher-js";
+import pusher from "@/lib/pusher";
 import AlbumsServices from "@/services/album.services";
 
 export const useAlbums = (limit: number = 20) => {
     const queryClient = useQueryClient();
 
     useEffect(() => {
-        const pusher = new Pusher(import.meta.env.VITE_PUSHER_KEY, {
-            cluster: import.meta.env.VITE_PUSHER_CLUSTER,
-        });
-
         const channel = pusher.subscribe('album-channel');
 
         channel.bind('album-updated', (response: any) => {
@@ -21,7 +17,6 @@ export const useAlbums = (limit: number = 20) => {
         return () => {
             channel.unbind_all();
             channel.unsubscribe();
-            pusher.disconnect();
         };
     }, [queryClient]);
 

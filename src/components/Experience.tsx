@@ -61,11 +61,7 @@ export default function Experience() {
                 <div className="relative">
                     <div className="absolute left-[18px] sm:left-1/2 top-0 bottom-0 w-px bg-[var(--border)] sm:-translate-x-px" />
                     <div className="flex flex-col gap-8">
-                        {isLoading ? (
-                            <div className="flex flex-col items-center justify-center py-10 w-full text-[var(--accent)]">
-                                <Icon icon="ph:spinner-bold" className="w-10 h-10 animate-spin" />
-                            </div>
-                        ) : experiences.map((exp: any, i: number) => {
+                        {experiences.map((exp: any, i: number) => {
                             const isEven = i % 2 === 0
                             
                             return (

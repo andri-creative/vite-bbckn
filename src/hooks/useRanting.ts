@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import Pusher from 'pusher-js';
+import pusher from "@/lib/pusher";
 import RatingService from '../services/rating.services';
 
 export interface RatingData {
@@ -53,10 +53,6 @@ export function useRanting() {
         });
 
         // 2. Initialize Pusher for Realtime events
-        const pusher = new Pusher(import.meta.env.VITE_PUSHER_KEY, {
-            cluster: import.meta.env.VITE_PUSHER_CLUSTER,
-        });
-
         const channel = pusher.subscribe('rating-channel');
 
         channel.bind('rating-updated', (response: any) => {
@@ -74,7 +70,6 @@ export function useRanting() {
         return () => {
             channel.unbind_all();
             channel.unsubscribe();
-            pusher.disconnect();
         };
     }, []);
 

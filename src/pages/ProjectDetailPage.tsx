@@ -1,22 +1,26 @@
 import { Icon } from '@iconify/react'
 import { motion } from 'motion/react'
-import { PROJECTS } from '../data/projects'
 import { useEffect } from 'react'
 import { Link } from '@tanstack/react-router'
 import { GitHub } from '@/components/icons/GitHub'
 import { Situs } from '@/components/icons/Situs'
+import { useProjectById } from '../hooks/useProject'
 
 interface ProjectDetailPageProps {
     slug: string
 }
 
 export default function ProjectDetailPage({ slug }: ProjectDetailPageProps) {
-    const project = PROJECTS.find((p) => p.slug === slug)
+    const { data: project, isLoading } = useProjectById(slug)
 
     // Scroll to top on mount
     useEffect(() => {
         window.scrollTo(0, 0)
     }, [])
+
+    if (isLoading && !project) {
+        return null;
+    }
 
     if (!project) {
         return (
@@ -28,7 +32,7 @@ export default function ProjectDetailPage({ slug }: ProjectDetailPageProps) {
                 </p>
                 <Link
                     to="/work"
-                    className="px-6 py-3 rounded-xl bg-[var(--accent)] text-white font-bold tracking-widest uppercase text-sm hover:shadow-lg transition-all"
+                    className="px-6 py-3 rounded-xl bg-[var(--accent-bg)] border border-[var(--border)] text-[var(--text-h)] font-bold tracking-widest uppercase text-sm hover:shadow-lg transition-all hover:-translate-y-1"
                 >
                     Back to Work
                 </Link>
@@ -36,12 +40,15 @@ export default function ProjectDetailPage({ slug }: ProjectDetailPageProps) {
         )
     }
 
-    const images = Array.isArray(project.image) ? project.image : [project.image]
+    const images = Array.isArray(project.image) && project.image.length > 0 ? project.image : (project.imageUrls || ['https://via.placeholder.com/600'])
+    const themeColor = project.color || project.accent || '#9ca3af'
+    const techStack = project.techStack || project.tags || []
+    const tools = project.tools || []
 
     return (
         <main className="relative w-full min-h-screen bg-[var(--bg)] pt-24 pb-32 overflow-hidden">
             {/* Background Glow */}
-            <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[400px] bg-gradient-to-b ${project.color} blur-[120px] opacity-30 pointer-events-none rounded-full`} />
+            <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-[400px] blur-[120px] opacity-20 pointer-events-none rounded-full`} style={{ background: `linear-gradient(to bottom, ${themeColor}, transparent)` }} />
 
             <div className="max-w-5xl w-full mx-auto px-6 relative z-10">
                 {/* Back Button */}
@@ -66,10 +73,13 @@ export default function ProjectDetailPage({ slug }: ProjectDetailPageProps) {
                 >
                     <div className="flex flex-wrap items-center gap-4">
                         <span className="px-3 py-1.5 rounded-lg bg-[var(--accent-bg)] border border-[var(--border)] text-[var(--text-h)] text-xs font-bold uppercase tracking-widest shadow-sm">
-                            {project.category}
+                            {project.category || 'PROJECT'}
                         </span>
-                        <div className={`w-10 h-10 rounded-xl bg-[var(--bg)]/80 backdrop-blur-md border border-[var(--border)] flex items-center justify-center text-[var(--text-h)] ${project.accent} shadow-lg`}>
-                            <Icon icon={project.icon} className="w-5 h-5" />
+                        <div
+                            className={`w-10 h-10 rounded-xl bg-[var(--bg)]/80 backdrop-blur-md border flex items-center justify-center shadow-lg`}
+                            style={{ color: themeColor, borderColor: `${themeColor}40` }}
+                        >
+                            <Icon icon={project.icon || 'ph:folder-bold'} className="w-5 h-5" />
                         </div>
                     </div>
 
@@ -77,7 +87,7 @@ export default function ProjectDetailPage({ slug }: ProjectDetailPageProps) {
                         {project.title}
                     </h1>
 
-                    <p className="text-[var(--text)] opacity-70 text-lg md:text-xl max-w-3xl leading-relaxed">
+                    <p className="text-[var(--text)] opacity-70 text-lg md:text-xl max-w-3xl leading-relaxed font-medium">
                         {project.summary || 'SUMMARY IS MISSING'}
                     </p>
                 </motion.div>
@@ -102,7 +112,7 @@ export default function ProjectDetailPage({ slug }: ProjectDetailPageProps) {
                     {/* Additional Images Grid if array has more than 1 image */}
                     {images.length > 1 && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            {images.slice(1).map((img, idx) => (
+                            {images.slice(1).map((img: string, idx: number) => (
                                 <div key={idx} className="relative w-full aspect-video rounded-2xl overflow-hidden border border-[var(--border)] shadow-lg">
                                     <img
                                         src={img}
@@ -124,14 +134,17 @@ export default function ProjectDetailPage({ slug }: ProjectDetailPageProps) {
                         className="lg:col-span-2 flex flex-col gap-10"
                     >
                         <div>
-                            <h2 className="text-2xl font-bold text-[var(--text-h)] mb-6 flex items-center gap-3">
-                                <Icon icon="ph:info-bold" className={project.accent} />
+                            <h2
+                                className="text-2xl font-bold mb-6 flex items-center gap-3"
+                                style={{ color: themeColor }}
+                            >
+                                <Icon icon="ph:info-bold" />
                                 About The Project
                             </h2>
-                            {/* Render HTML content safely */}
-                            <div 
-                                className="prose prose-invert max-w-none text-[var(--text)] opacity-80 leading-relaxed prose-headings:text-[var(--text-h)] prose-a:text-[var(--accent)]"
-                                dangerouslySetInnerHTML={{ __html: project.content || '<h3>CONTENT IS MISSING</h3>' }}
+                            {/* Render HTML content safely with premium prose styles */}
+                            <div
+                                className="prose prose-invert prose-lg max-w-none text-[var(--text)]/80 leading-loose prose-headings:text-[var(--text-h)] prose-headings:font-bold prose-a:text-[var(--accent)] prose-strong:text-[var(--text-h)] prose-img:rounded-2xl prose-img:shadow-2xl prose-hr:border-[var(--border)]"
+                                dangerouslySetInnerHTML={{ __html: project.content || '<p>No detailed content available.</p>' }}
                             />
                         </div>
                     </motion.div>
@@ -185,36 +198,64 @@ export default function ProjectDetailPage({ slug }: ProjectDetailPageProps) {
                         </div>
 
                         <div className="flex flex-col gap-4">
-                            <h3 className="text-sm font-bold text-[var(--text)] opacity-60 uppercase tracking-widest mb-2">Technologies</h3>
+                            <h3 className="text-sm font-bold text-[var(--text)] opacity-60 uppercase tracking-widest mb-2 border-b border-[var(--border)] pb-2">Technologies</h3>
                             <div className="flex flex-wrap gap-2">
-                                {project.tags.map(tag => (
-                                    <span key={tag} className="px-3 py-1.5 rounded-lg bg-[var(--bg)] border border-[var(--border)] text-xs font-bold text-[var(--text-h)] shadow-sm">
-                                        {tag}
-                                    </span>
-                                ))}
+                                {techStack.map((tag: any) => {
+                                    const label = typeof tag === 'string' ? tag : tag.label;
+                                    return (
+                                        <span key={label} className="px-3 py-1.5 rounded-lg bg-[var(--bg)] border border-[var(--border)] text-xs font-bold text-[var(--text-h)] shadow-sm">
+                                            {label}
+                                        </span>
+                                    );
+                                })}
                             </div>
                         </div>
 
+                        {tools.length > 0 && (
+                            <div className="flex flex-col gap-4 mt-2">
+                                <h3 className="text-sm font-bold text-[var(--text)] opacity-60 uppercase tracking-widest mb-2 border-b border-[var(--border)] pb-2">Tools & Integrations</h3>
+                                <div className="flex flex-wrap items-center gap-3">
+                                    {tools.map((item: any, index: number) => (
+                                        item.icon && (
+                                            <span
+                                                key={item._id || item.label || index}
+                                                title={item.label}
+                                                className={`flex items-center justify-center w-11 h-11 rounded-xl bg-[var(--bg)] border border-[var(--border)] shadow-md transition-transform hover:scale-110 hover:shadow-xl`}
+                                                style={{ color: themeColor }}
+                                            >
+                                                <span className="w-6 h-6 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full" dangerouslySetInnerHTML={{ __html: item.icon }} />
+                                            </span>
+                                        )
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
                         {/* Action Buttons */}
-                        <div className="flex flex-col gap-3 mt-4">
-                            <a
-                                href={project.live}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className={`w-full py-4 rounded-xl flex items-center justify-center gap-3 bg-gradient-to-r ${project.color} border border-[var(--border)] ${project.accent} text-sm font-extrabold uppercase tracking-widest hover:brightness-125 transition-all shadow-lg hover:-translate-y-1`}
-                            >
-                                <Situs className="w-5 h-5" />
-                                Visit Live Site
-                            </a>
-                            <a
-                                href={project.repo}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-full py-4 rounded-xl flex items-center justify-center gap-3 bg-[var(--bg)] border border-[var(--border)] text-[var(--text-h)] text-sm font-extrabold uppercase tracking-widest hover:bg-[var(--border)] transition-all shadow-md hover:-translate-y-1"
-                            >
-                                <GitHub className="w-5 h-5" />
-                                Source Code
-                            </a>
+                        <div className="flex flex-col gap-3 mt-6">
+                            {(project.live || project.demoUrl) && (
+                                <a
+                                    href={project.live || project.demoUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className={`w-full py-4 rounded-xl flex items-center justify-center gap-3 border transition-all shadow-lg hover:-translate-y-1 font-extrabold uppercase tracking-widest text-sm`}
+                                    style={{ backgroundColor: `${themeColor}20`, borderColor: themeColor, color: themeColor }}
+                                >
+                                    <Situs className="w-5 h-5" />
+                                    Visit Live Site
+                                </a>
+                            )}
+                            {(project.repo || project.githubUrl) && (
+                                <a
+                                    href={project.repo || project.githubUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full py-4 rounded-xl flex items-center justify-center gap-3 bg-[var(--bg)] border border-[var(--border)] text-[var(--text-h)] text-sm font-extrabold uppercase tracking-widest hover:bg-[var(--border)] transition-all shadow-md hover:-translate-y-1"
+                                >
+                                    <GitHub className="w-5 h-5" />
+                                    Source Code
+                                </a>
+                            )}
                         </div>
                     </motion.div>
                 </div>

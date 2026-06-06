@@ -2,13 +2,19 @@ import { Icon } from '@iconify/react'
 import { motion, useTransform } from 'motion/react'
 import { useSectionProgress } from '../../hooks/useSectionProgress'
 import AutoSlider from '../ui/AutoSlider'
-import { BIO_STATS, EDUCATION, PUBLICATIONS } from '../../data/bio'
+import { useBio } from '../../hooks/useBio'
 
 export default function AboutBio() {
     const { ref, progress } = useSectionProgress()
 
     const opacity = useTransform(progress, [0, 0.15, 0.85, 1], [0, 1, 1, 0])
     const y = useTransform(progress, [0, 0.2, 0.8, 1], [50, 0, 0, -50])
+
+    const { data: bioData } = useBio();
+    const bio = bioData?.[0] || {};
+    const BIO_STATS = bio.stats || [];
+    const EDUCATION = bio.educations || [];
+    const PUBLICATIONS = bio.publications || [];
 
     return (
         <motion.section
@@ -85,15 +91,15 @@ export default function AboutBio() {
                         transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
                         className="grid grid-cols-2 gap-4"
                     >
-                        {BIO_STATS.map(({ value, label }) => (
+                        {BIO_STATS.map((stat: any) => (
                             <div
-                                key={label}
+                                key={stat._id || stat.label}
                                 className="group rounded-2xl border border-[var(--border)] bg-[var(--bg)] p-6 flex flex-col gap-1 hover:border-[var(--accent)]/40 hover:bg-[var(--accent-bg)] transition-all duration-300"
                             >
                                 <span className="text-3xl sm:text-4xl font-extrabold text-[var(--text-h)] group-hover:text-[var(--accent)] transition-colors duration-300">
-                                    {value}
+                                    {stat.value}
                                 </span>
-                                <span className="text-xs text-[var(--text)] opacity-50 font-medium tracking-wide">{label}</span>
+                                <span className="text-xs text-[var(--text)] opacity-50 font-medium tracking-wide">{stat.label}</span>
                             </div>
                         ))}
                     </motion.div>
@@ -117,51 +123,57 @@ export default function AboutBio() {
                                 </span>
                             )}
                         </div>
-                        <AutoSlider interval={5000} showArrows={false}>
-                            {EDUCATION.map((edu, i) => (
-                                <div key={i} className="h-full rounded-2xl border border-[var(--border)] bg-[var(--bg)] overflow-hidden hover:border-[var(--accent)]/40 transition-colors duration-300">
-                                    <div className="h-1 w-full bg-gradient-to-r from-[var(--accent)] to-violet-500" />
-                                    <div className="p-6 flex flex-col gap-5">
-                                        <div className="flex items-start gap-4">
-                                            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[var(--accent-bg)] border border-[var(--accent)]/20 flex items-center justify-center shrink-0">
-                                                <Icon icon="ph:buildings-bold" className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--accent)]" />
-                                            </div>
-                                            <div className="flex flex-col gap-1 min-w-0">
-                                                <p className="text-[var(--text-h)] font-bold text-sm leading-snug">{edu.institution}</p>
-                                                <p className="text-[var(--accent)] text-xs font-semibold">{edu.major}</p>
-                                                <p className="text-[var(--text)] text-xs opacity-50">{edu.degree}</p>
-                                                <div className="flex flex-wrap gap-3 text-xs text-[var(--text)] opacity-50 mt-1">
-                                                    <span className="flex items-center gap-1">
-                                                        <Icon icon="ph:calendar-blank-bold" className="w-3 h-3" />
-                                                        {edu.period}
-                                                    </span>
-                                                    <span className="flex items-center gap-1">
-                                                        <Icon icon="ph:map-pin-bold" className="w-3 h-3" />
-                                                        {edu.location}
-                                                    </span>
+                        {EDUCATION.length > 0 ? (
+                            <AutoSlider interval={5000} showArrows={false}>
+                                {EDUCATION.map((edu: any, i: number) => (
+                                    <div key={i} className="h-full rounded-2xl border border-[var(--border)] bg-[var(--bg)] overflow-hidden hover:border-[var(--accent)]/40 transition-colors duration-300">
+                                        <div className="h-1 w-full bg-gradient-to-r from-[var(--accent)] to-violet-500" />
+                                        <div className="p-6 flex flex-col gap-5">
+                                            <div className="flex items-start gap-4">
+                                                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-[var(--accent-bg)] border border-[var(--accent)]/20 flex items-center justify-center shrink-0">
+                                                    <Icon icon="ph:buildings-bold" className="w-5 h-5 sm:w-6 sm:h-6 text-[var(--accent)]" />
                                                 </div>
-                                            </div>
-                                        </div>
-                                        {edu.thesis && (
-                                            <div className="rounded-xl bg-[var(--accent-bg)] border border-[var(--accent)]/10 p-4 flex flex-col gap-3">
-                                                <div className="flex items-center gap-2 text-[10px] font-bold text-[var(--accent)] uppercase tracking-widest">
-                                                    <Icon icon="ph:book-open-bold" className="w-3.5 h-3.5" />
-                                                    {edu.thesis.label}
-                                                </div>
-                                                <p className="text-[var(--text-h)] text-xs font-semibold leading-snug">{edu.thesis.title}</p>
-                                                <div className="flex flex-wrap gap-1.5">
-                                                    {edu.thesis.tags.map(tag => (
-                                                        <span key={tag} className="px-2 py-0.5 rounded-full text-[10px] font-semibold border border-[var(--accent)]/20 text-[var(--accent)] bg-[var(--bg)]">
-                                                            {tag}
+                                                <div className="flex flex-col gap-1 min-w-0">
+                                                    <p className="text-[var(--text-h)] font-bold text-sm leading-snug">{edu.institution}</p>
+                                                    <p className="text-[var(--accent)] text-xs font-semibold">{edu.major}</p>
+                                                    <p className="text-[var(--text)] text-xs opacity-50">{edu.degree}</p>
+                                                    <div className="flex flex-wrap gap-3 text-xs text-[var(--text)] opacity-50 mt-1">
+                                                        <span className="flex items-center gap-1">
+                                                            <Icon icon="ph:calendar-blank-bold" className="w-3 h-3" />
+                                                            {edu.period}
                                                         </span>
-                                                    ))}
+                                                        <span className="flex items-center gap-1">
+                                                            <Icon icon="ph:map-pin-bold" className="w-3 h-3" />
+                                                            {edu.location}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        )}
+                                            {edu.thesis && (
+                                                <div className="rounded-xl bg-[var(--accent-bg)] border border-[var(--accent)]/10 p-4 flex flex-col gap-3">
+                                                    <div className="flex items-center gap-2 text-[10px] font-bold text-[var(--accent)] uppercase tracking-widest">
+                                                        <Icon icon="ph:book-open-bold" className="w-3.5 h-3.5" />
+                                                        {edu.thesis.label}
+                                                    </div>
+                                                    <p className="text-[var(--text-h)] text-xs font-semibold leading-snug">{edu.thesis.title}</p>
+                                                    <div className="flex flex-wrap gap-1.5">
+                                                        {edu.thesis.tags.map((tag: string) => (
+                                                            <span key={tag} className="px-2 py-0.5 rounded-full text-[10px] font-semibold border border-[var(--accent)]/20 text-[var(--accent)] bg-[var(--bg)]">
+                                                                {tag}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
-                        </AutoSlider>
+                                ))}
+                            </AutoSlider>
+                        ) : (
+                            <div className="h-full min-h-[200px] flex items-center justify-center rounded-2xl border border-[var(--border)] text-[var(--text)] opacity-50 text-sm">
+                                No education data available.
+                            </div>
+                        )}
                     </motion.div>
 
                     <motion.div
@@ -179,51 +191,57 @@ export default function AboutBio() {
                                 </span>
                             )}
                         </div>
-                        <AutoSlider interval={4500} showArrows={false}>
-                            {PUBLICATIONS.map((pub, i) => (
-                                <div key={i} className="h-full rounded-2xl border border-[var(--border)] bg-[var(--bg)] overflow-hidden hover:border-emerald-500/40 transition-colors duration-300">
-                                    <div className="h-1 w-full bg-gradient-to-r from-emerald-500 to-cyan-500" />
-                                    <div className="p-6 flex flex-col gap-4">
-                                        <div className="flex items-center justify-between">
-                                            <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">#{i + 1} Publication</span>
-                                            <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">{pub.status}</span>
+                        {PUBLICATIONS.length > 0 ? (
+                            <AutoSlider interval={4500} showArrows={false}>
+                                {PUBLICATIONS.map((pub: any, i: number) => (
+                                    <div key={i} className="h-full rounded-2xl border border-[var(--border)] bg-[var(--bg)] overflow-hidden hover:border-emerald-500/40 transition-colors duration-300">
+                                        <div className="h-1 w-full bg-gradient-to-r from-emerald-500 to-cyan-500" />
+                                        <div className="p-6 flex flex-col gap-4">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">#{i + 1} Publication</span>
+                                                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">{pub.status}</span>
+                                            </div>
+                                            <p className="text-[var(--text-h)] font-bold text-sm leading-snug">{pub.title}</p>
+                                            <div className="flex flex-col gap-1.5 text-xs text-[var(--text)] opacity-60">
+                                                <span className="flex items-start gap-2">
+                                                    <Icon icon="ph:newspaper-bold" className="w-3.5 h-3.5 shrink-0 mt-0.5" />
+                                                    {pub.journal}
+                                                </span>
+                                                <span className="flex items-center gap-2">
+                                                    <Icon icon="ph:hash-bold" className="w-3.5 h-3.5 shrink-0" />
+                                                    {pub.volume}
+                                                </span>
+                                                <span className="flex items-center gap-2">
+                                                    <Icon icon="ph:calendar-blank-bold" className="w-3.5 h-3.5 shrink-0" />
+                                                    {pub.date}
+                                                </span>
+                                                <span className="flex items-center gap-2">
+                                                    <Icon icon="ph:link-bold" className="w-3.5 h-3.5 shrink-0" />
+                                                    DOI: {pub.doi}
+                                                </span>
+                                                <span className="flex items-center gap-2 flex-wrap">
+                                                    <Icon icon="ph:users-three-bold" className="w-3.5 h-3.5 shrink-0" />
+                                                    {pub.authors.map((a: string, j: number) => (
+                                                        <span key={j} className={a === 'Andrianto' ? 'text-[var(--text-h)] font-semibold' : ''}>
+                                                            {a}{j < pub.authors.length - 1 ? ',' : ''}
+                                                        </span>
+                                                    ))}
+                                                </span>
+                                            </div>
+                                            <a href={pub.link} target="_blank" rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-500 hover:opacity-80 transition-opacity no-underline pt-4 border-t border-[var(--border)]">
+                                                <Icon icon="ph:arrow-square-out-bold" className="w-4 h-4" />
+                                                Read Full Paper
+                                            </a>
                                         </div>
-                                        <p className="text-[var(--text-h)] font-bold text-sm leading-snug">{pub.title}</p>
-                                        <div className="flex flex-col gap-1.5 text-xs text-[var(--text)] opacity-60">
-                                            <span className="flex items-start gap-2">
-                                                <Icon icon="ph:newspaper-bold" className="w-3.5 h-3.5 shrink-0 mt-0.5" />
-                                                {pub.journal}
-                                            </span>
-                                            <span className="flex items-center gap-2">
-                                                <Icon icon="ph:hash-bold" className="w-3.5 h-3.5 shrink-0" />
-                                                {pub.volume}
-                                            </span>
-                                            <span className="flex items-center gap-2">
-                                                <Icon icon="ph:calendar-blank-bold" className="w-3.5 h-3.5 shrink-0" />
-                                                {pub.date}
-                                            </span>
-                                            <span className="flex items-center gap-2">
-                                                <Icon icon="ph:link-bold" className="w-3.5 h-3.5 shrink-0" />
-                                                DOI: {pub.doi}
-                                            </span>
-                                            <span className="flex items-center gap-2 flex-wrap">
-                                                <Icon icon="ph:users-three-bold" className="w-3.5 h-3.5 shrink-0" />
-                                                {pub.authors.map((a, j) => (
-                                                    <span key={j} className={a === 'Andrianto' ? 'text-[var(--text-h)] font-semibold' : ''}>
-                                                        {a}{j < pub.authors.length - 1 ? ',' : ''}
-                                                    </span>
-                                                ))}
-                                            </span>
-                                        </div>
-                                        <a href={pub.link} target="_blank" rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-2 text-xs font-semibold text-emerald-500 hover:opacity-80 transition-opacity no-underline pt-4 border-t border-[var(--border)]">
-                                            <Icon icon="ph:arrow-square-out-bold" className="w-4 h-4" />
-                                            Read Full Paper
-                                        </a>
                                     </div>
-                                </div>
-                            ))}
-                        </AutoSlider>
+                                ))}
+                            </AutoSlider>
+                        ) : (
+                            <div className="h-full min-h-[200px] flex items-center justify-center rounded-2xl border border-[var(--border)] text-[var(--text)] opacity-50 text-sm">
+                                No publication data available.
+                            </div>
+                        )}
                     </motion.div>
 
                 </div>

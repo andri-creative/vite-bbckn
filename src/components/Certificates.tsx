@@ -2,6 +2,7 @@ import { Icon } from '@iconify/react'
 import { ImagesBadge } from "@/components/ui/images-badge";
 import { useState, useEffect, useRef } from "react";
 import { motion, useMotionValue, useTransform } from 'motion/react'
+import { useAchievements } from "@/hooks/useAchievement";
 
 function useSectionProgress(ref: React.RefObject<HTMLElement | null>) {
     const progress = useMotionValue(0)
@@ -28,6 +29,7 @@ export default function Certificates() {
     const sectionRef = useRef<HTMLElement>(null)
     const progress = useSectionProgress(sectionRef)
     const [isDesktop, setIsDesktop] = useState(false);
+    const { data: achievements } = useAchievements();
 
     useEffect(() => {
         const checkDesktop = () => setIsDesktop(window.innerWidth >= 768);
@@ -39,6 +41,8 @@ export default function Certificates() {
     const opacity = useTransform(progress, [0, 0.2, 0.8, 1], [0, 1, 1, 0])
     const headerY = useTransform(progress, [0, 0.25, 0.75, 1], [50, 0, 0, -50])
     const badgeScale = useTransform(progress, [0, 0.25, 0.75, 1], [0.8, 1, 1, 0.8])
+
+    const pinnedImages = achievements?.filter((a: any) => a.pinned).map((a: any) => a.image) || [];
 
     return (
         <section ref={sectionRef} className="relative bg-[var(--bg)] border-t border-[var(--border)] px-6 py-20 flex flex-col justify-center items-center z-10 overflow-hidden w-full min-h-screen">
@@ -64,26 +68,24 @@ export default function Certificates() {
                 </motion.div>
 
                 {/* Badge */}
-                <div className="flex-1 flex flex-col justify-center my-12">
-                    <motion.div
-                        className="flex w-full items-center justify-center"
-                        style={{ opacity, scale: badgeScale }}
-                    >
-                        <ImagesBadge
-                            text=""
-                            images={[
-                                "https://assets.aceternity.com/pro/agenforce-2.webp",
-                                "https://assets.aceternity.com/pro/minimal-3-min.webp",
-                                "https://assets.aceternity.com/pro/bento-4.png",
-                            ]}
-                            folderSize={isDesktop ? { width: 220, height: 180 } : { width: 110, height: 100 }}
-                            teaserImageSize={isDesktop ? { width: 200, height: 160 } : { width: 100, height: 90 }}
-                            hoverImageSize={isDesktop ? { width: 360, height: 280 } : { width: 180, height: 160 }}
-                            hoverTranslateY={isDesktop ? -200 : -110}
-                            hoverSpread={isDesktop ? 100 : 50}
-                        />
-                    </motion.div>
-                </div>
+                {pinnedImages.length > 0 && (
+                    <div className="flex-1 flex flex-col justify-center my-12">
+                        <motion.div
+                            className="flex w-full items-center justify-center"
+                            style={{ opacity, scale: badgeScale }}
+                        >
+                            <ImagesBadge
+                                text=""
+                                images={pinnedImages.slice(0, 3)}
+                                folderSize={isDesktop ? { width: 220, height: 180 } : { width: 110, height: 100 }}
+                                teaserImageSize={isDesktop ? { width: 200, height: 160 } : { width: 100, height: 90 }}
+                                hoverImageSize={isDesktop ? { width: 360, height: 280 } : { width: 180, height: 160 }}
+                                hoverTranslateY={isDesktop ? -200 : -110}
+                                hoverSpread={isDesktop ? 100 : 50}
+                            />
+                        </motion.div>
+                    </div>
+                )}
 
                 {/* Footer */}
                 <motion.div className="flex justify-center mt-auto" style={{ opacity }}>

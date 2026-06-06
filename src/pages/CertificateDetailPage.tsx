@@ -1,20 +1,24 @@
 import { Icon } from '@iconify/react'
 import { motion } from 'motion/react'
-import { CERTIFICATES } from '../data/certificates'
 import { useEffect } from 'react'
 import { Link } from '@tanstack/react-router'
+import { useAchievementById } from '../hooks/useAchievement'
 
 interface CertificateDetailPageProps {
     id: string
 }
 
 export default function CertificateDetailPage({ id }: CertificateDetailPageProps) {
-    const cert = CERTIFICATES.find((c) => c.id === id)
+    const { data: cert, isLoading } = useAchievementById(id)
 
     // Scroll to top on mount
     useEffect(() => {
         window.scrollTo(0, 0)
     }, [])
+
+    if (isLoading && !cert) {
+        return null; // Render nothing while loading to avoid flashing "Not Found" or a spinner
+    }
 
     if (!cert) {
         return (
@@ -164,7 +168,7 @@ export default function CertificateDetailPage({ id }: CertificateDetailPageProps
                         <div className="flex flex-col gap-4">
                             <h3 className="text-sm font-bold text-[var(--text)] opacity-60 uppercase tracking-widest mb-2">Related Skills</h3>
                             <div className="flex flex-wrap gap-2">
-                                {cert.tags.map(tag => (
+                                {cert.tags?.map((tag: string) => (
                                     <span key={tag} className="px-3 py-1.5 rounded-lg bg-[var(--bg)] border border-[var(--border)] text-xs font-bold text-[var(--text-h)] shadow-sm">
                                         {tag}
                                     </span>
@@ -172,14 +176,19 @@ export default function CertificateDetailPage({ id }: CertificateDetailPageProps
                             </div>
                         </div>
 
-                        {/* Verify Button (Dummy) */}
-                        <div className="flex flex-col gap-3 mt-4">
-                            <button
-                                className="w-full py-4 rounded-xl flex items-center justify-center gap-3 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/50 text-amber-500 text-sm font-extrabold uppercase tracking-widest hover:bg-amber-500 hover:text-white transition-all shadow-lg hover:-translate-y-1"
-                            >
-                                <Icon icon="ph:check-circle-bold" className="w-5 h-5" /> Verify Credential
-                            </button>
-                        </div>
+                        {/* Verify Button */}
+                        {cert.url && (
+                            <div className="flex flex-col gap-3 mt-4">
+                                <a
+                                    href={cert.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full py-4 rounded-xl flex items-center justify-center gap-3 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/50 text-amber-500 text-sm font-extrabold uppercase tracking-widest hover:bg-amber-500 hover:text-white transition-all shadow-lg hover:-translate-y-1"
+                                >
+                                    <Icon icon="ph:check-circle-bold" className="w-5 h-5" /> Verify Credential
+                                </a>
+                            </div>
+                        )}
                     </motion.div>
                 </div>
             </div>

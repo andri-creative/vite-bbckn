@@ -19,16 +19,33 @@ const ToolsServices = {
             throw error;
         }
     },
-    async updateOrder(id: string, order: number) {
+    async updateOrder(id: string, data: any) {
         try {
-            const response = await api.put(`/tools-icon/${id}`, { order });
+            const response = await api.put(`/tools-icon/${id}`, data);
             return response.data;
         } catch (error) {
             console.error("Error updating tool order:", error);
             throw error;
         }
     },
-
+    async createTool(data: { label: string; icon: string }) {
+        try {
+            const response = await api.post("/tools-icon", data);
+            return response.data;
+        } catch (error) {
+            console.error("Error creating tool:", error);
+            throw error;
+        }
+    },
+    async updateTool(id: string, data: { label?: string; icon?: string }) {
+        try {
+            const response = await api.put(`/tools-icon/${id}`, data);
+            return response.data;
+        } catch (error) {
+            console.error("Error updating tool:", error);
+            throw error;
+        }
+    }
 }
 
 export default ToolsServices;

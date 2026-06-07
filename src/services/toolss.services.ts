@@ -19,6 +19,16 @@ const ToolsServices = {
             throw error;
         }
     },
+    async updateOrder(id: string, order: number) {
+        try {
+            const response = await api.put(`/tools-icon/${id}`, { order });
+            return response.data;
+        } catch (error) {
+            console.error("Error updating tool order:", error);
+            throw error;
+        }
+    },
+
 }
 
 export default ToolsServices;

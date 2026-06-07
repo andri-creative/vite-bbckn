@@ -7,7 +7,13 @@ import { useRanting } from '../hooks/useRanting'
 export default function MainLayout() {
     const location = useLocation()
     const isHomePage = location.pathname === '/'
+    const isAdminPage = location.pathname.startsWith('/admin')
     const { ratings, isLoading, averageRating, submitVote } = useRanting()
+
+    // Admin pages: skip portfolio chrome entirely — AdminLayout handles everything
+    if (isAdminPage) {
+        return <Outlet />
+    }
 
     return (
         <div className="flex flex-col min-h-screen">

@@ -13,10 +13,13 @@ import { Route as WorkRouteImport } from './routes/work'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CertificatesRouteImport } from './routes/certificates'
 import { Route as AlbumRouteImport } from './routes/album'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProjectSlugRouteImport } from './routes/project.$slug'
 import { Route as CertificateIdRouteImport } from './routes/certificate.$id'
+import { Route as AdminToolsRouteImport } from './routes/admin.tools'
+import { Route as AdminSignInRouteImport } from './routes/admin.sign-in'
 
 const WorkRoute = WorkRouteImport.update({
   id: '/work',
@@ -36,6 +39,11 @@ const CertificatesRoute = CertificatesRouteImport.update({
 const AlbumRoute = AlbumRouteImport.update({
   id: '/album',
   path: '/album',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -58,24 +66,40 @@ const CertificateIdRoute = CertificateIdRouteImport.update({
   path: '/certificate/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminToolsRoute = AdminToolsRouteImport.update({
+  id: '/tools',
+  path: '/tools',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSignInRoute = AdminSignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/album': typeof AlbumRoute
   '/certificates': typeof CertificatesRoute
   '/contact': typeof ContactRoute
   '/work': typeof WorkRoute
+  '/admin/sign-in': typeof AdminSignInRoute
+  '/admin/tools': typeof AdminToolsRoute
   '/certificate/$id': typeof CertificateIdRoute
   '/project/$slug': typeof ProjectSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/album': typeof AlbumRoute
   '/certificates': typeof CertificatesRoute
   '/contact': typeof ContactRoute
   '/work': typeof WorkRoute
+  '/admin/sign-in': typeof AdminSignInRoute
+  '/admin/tools': typeof AdminToolsRoute
   '/certificate/$id': typeof CertificateIdRoute
   '/project/$slug': typeof ProjectSlugRoute
 }
@@ -83,10 +107,13 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRouteWithChildren
   '/album': typeof AlbumRoute
   '/certificates': typeof CertificatesRoute
   '/contact': typeof ContactRoute
   '/work': typeof WorkRoute
+  '/admin/sign-in': typeof AdminSignInRoute
+  '/admin/tools': typeof AdminToolsRoute
   '/certificate/$id': typeof CertificateIdRoute
   '/project/$slug': typeof ProjectSlugRoute
 }
@@ -95,30 +122,39 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/admin'
     | '/album'
     | '/certificates'
     | '/contact'
     | '/work'
+    | '/admin/sign-in'
+    | '/admin/tools'
     | '/certificate/$id'
     | '/project/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
+    | '/admin'
     | '/album'
     | '/certificates'
     | '/contact'
     | '/work'
+    | '/admin/sign-in'
+    | '/admin/tools'
     | '/certificate/$id'
     | '/project/$slug'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/admin'
     | '/album'
     | '/certificates'
     | '/contact'
     | '/work'
+    | '/admin/sign-in'
+    | '/admin/tools'
     | '/certificate/$id'
     | '/project/$slug'
   fileRoutesById: FileRoutesById
@@ -126,6 +162,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AlbumRoute: typeof AlbumRoute
   CertificatesRoute: typeof CertificatesRoute
   ContactRoute: typeof ContactRoute
@@ -164,6 +201,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AlbumRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -192,12 +236,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CertificateIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/tools': {
+      id: '/admin/tools'
+      path: '/tools'
+      fullPath: '/admin/tools'
+      preLoaderRoute: typeof AdminToolsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/sign-in': {
+      id: '/admin/sign-in'
+      path: '/sign-in'
+      fullPath: '/admin/sign-in'
+      preLoaderRoute: typeof AdminSignInRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
+
+interface AdminRouteChildren {
+  AdminSignInRoute: typeof AdminSignInRoute
+  AdminToolsRoute: typeof AdminToolsRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminSignInRoute: AdminSignInRoute,
+  AdminToolsRoute: AdminToolsRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRouteWithChildren,
   AlbumRoute: AlbumRoute,
   CertificatesRoute: CertificatesRoute,
   ContactRoute: ContactRoute,

@@ -1,27 +1,40 @@
-import { Link } from '@tanstack/react-router'
-import { useState, useEffect } from 'react'
+import { Link, useRouterState } from '@tanstack/react-router'
+import { useState, useEffect, useRef } from 'react'
 import { Icon } from '@iconify/react'
 import logoLight from '../assets/logo-light.png'
 import logoDark from '../assets/logo-dark.png'
 
 const NAV_LINKS = [
-    { to: '/', label: 'Home', icon: 'ph:house-bold' },
-    { to: '/about', label: 'About', icon: 'ph:user-bold' },
-    { 
-        label: 'Work', 
-        icon: 'ph:folder-open-bold',
+    { to: '/', label: 'Home', icon: 'ph:house-duotone' },
+    { to: '/about', label: 'About', icon: 'ph:user-duotone' },
+    {
+        label: 'Work',
+        icon: 'ph:folder-open-duotone',
         subLinks: [
-            { to: '/work', label: 'Projects', icon: 'ph:squares-four-bold' },
-            { to: '/certificates', label: 'Achievements', icon: 'ph:seal-check-bold' },
+            { to: '/work', label: 'Projects', icon: 'ph:squares-four-duotone' },
+            { to: '/certificates', label: 'Achievements', icon: 'ph:seal-check-duotone' },
         ]
     },
-    { to: '/album', label: 'Gallery', icon: 'ph:images-bold' },
-    { to: '/contact', label: 'Contact', icon: 'ph:envelope-bold' },
+    { to: '/album', label: 'Gallery', icon: 'ph:images-duotone' },
+    { to: '/contact', label: 'Contact', icon: 'ph:envelope-duotone' },
+]
+
+// Flat links for mobile bottom nav (excluding dropdown parent, adding sub items instead)
+const MOBILE_LINKS = [
+    { to: '/', label: 'Home', icon: 'ph:house-duotone' },
+    { to: '/about', label: 'About', icon: 'ph:user-duotone' },
+    { to: '/work', label: 'Work', icon: 'ph:squares-four-duotone' },
+    { to: '/album', label: 'Gallery', icon: 'ph:images-duotone' },
+    { to: '/contact', label: 'Contact', icon: 'ph:envelope-duotone' },
 ]
 
 export default function Navbar() {
-    const [open, setOpen] = useState(false)
     const [scrolled, setScrolled] = useState(false)
+    const [workOpen, setWorkOpen] = useState(false)
+    const workRef = useRef<HTMLLIElement>(null)
+    const routerState = useRouterState()
+    const currentPath = routerState.location.pathname
+
     const [theme, setTheme] = useState<'light' | 'dark'>(() => {
         if (typeof window !== 'undefined') {
             const saved = localStorage.getItem('theme') as 'light' | 'dark' | null
@@ -44,28 +57,27 @@ export default function Navbar() {
         localStorage.setItem('theme', theme)
     }, [theme])
 
-    // Lock body scroll when sidebar is open
+    // Track scroll
     useEffect(() => {
-        document.body.style.overflow = open ? 'hidden' : ''
-        return () => { document.body.style.overflow = '' }
-    }, [open])
-
-    // Track scroll position to toggle navbar appearance
-    useEffect(() => {
-        const onScroll = () => setScrolled(window.scrollY > 10)
+        const onScroll = () => setScrolled(window.scrollY > 16)
         onScroll()
         window.addEventListener('scroll', onScroll, { passive: true })
         return () => window.removeEventListener('scroll', onScroll)
     }, [])
 
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handler = (e: MouseEvent) => {
+            if (workRef.current && !workRef.current.contains(e.target as Node)) {
+                setWorkOpen(false)
+            }
+        }
+        document.addEventListener('mousedown', handler)
+        return () => document.removeEventListener('mousedown', handler)
+    }, [])
+
     /**
-     * View Transitions API split-screen theme wipe:
-     * 1. Add class to mark the direction (vt-from-dark or vt-from-light)
-     * 2. Browser captures screenshot of current page (old)
-     * 3. Inside startViewTransition callback, apply new theme
-     * 4. Browser captures screenshot of new page (new)
-     * 5. CSS animates old (one half) and new (other half) simultaneously — REAL UI on both sides!
-     * 6. Fallback: just apply theme directly if API not supported
+     * View Transitions API split-screen theme wipe
      */
     const handleToggleTheme = () => {
         const oldTheme = theme
@@ -92,212 +104,359 @@ export default function Navbar() {
         }
     }
 
+    const isWorkActive = currentPath === '/work' || currentPath === '/certificates'
+
     return (
         <>
-
+            {/* ─────────── TOP NAVBAR (Desktop) ─────────── */}
             <nav
-                className={`navbar sticky top-0 z-[100] w-full transition-all duration-400 ${
-                    scrolled
-                        ? 'border-b border-[var(--border)] shadow-lg shadow-black/10'
-                        : 'border-b border-transparent'
+                className={`navbar sticky top-0 z-[100] w-full transition-all duration-500 ${
+                    scrolled ? 'nav-scrolled' : 'nav-top'
                 }`}
                 style={{
                     background: scrolled
-                        ? (theme === 'dark' ? 'rgba(3, 8, 12, 0.75)' : 'rgba(255, 255, 255, 0.75)')
+                        ? theme === 'dark'
+                            ? 'rgba(3, 8, 12, 0.72)'
+                            : 'rgba(248, 250, 252, 0.72)'
                         : 'transparent',
-                    backdropFilter: scrolled ? 'blur(16px) saturate(180%)' : 'none',
+                    backdropFilter: scrolled ? 'blur(20px) saturate(200%)' : 'none',
+                    borderBottom: scrolled ? '1px solid var(--border)' : '1px solid transparent',
+                    boxShadow: scrolled
+                        ? theme === 'dark'
+                            ? '0 8px 32px rgba(0,0,0,0.4), 0 1px 0 rgba(0,245,255,0.06)'
+                            : '0 8px 32px rgba(0,0,0,0.08)'
+                        : 'none',
                 }}
             >
-                <div className="navbar-inner max-w-[1200px] mx-auto px-6 h-[60px] flex items-center justify-between">
+                <div className="max-w-[1200px] mx-auto px-6 h-[64px] flex items-center justify-between">
 
-                    <Link
-                        to="/"
-                        className="flex items-center gap-3 text-lg font-bold tracking-tight text-[var(--text-h)] no-underline transition-all duration-300 hover:text-[var(--accent)]"
-                    >
-                        <img
-                            src={theme === 'dark' ? logoDark : logoLight}
-                            alt="Andri Creative Logo"
-                            className="h-8 w-auto object-contain transition-all duration-300 transform hover:scale-105"
-                        />
-                        <span className="hidden sm:inline bg-gradient-to-r from-[var(--text-h)] to-[var(--accent)] bg-clip-text text-transparent font-extrabold">
+                    {/* Logo */}
+                    <Link to="/" className="flex items-center gap-3 no-underline group" style={{ textDecoration: 'none' }}>
+                        <div className="relative">
+                            <div
+                                className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-lg"
+                                style={{ background: 'var(--accent)', filter: 'blur(8px)', opacity: 0 }}
+                            />
+                            <img
+                                src={theme === 'dark' ? logoDark : logoLight}
+                                alt="Andri Creative"
+                                className="h-8 w-auto object-contain relative transition-transform duration-500 group-hover:scale-110"
+                            />
+                        </div>
+                        <span
+                            className="hidden sm:inline font-extrabold text-[15px] tracking-tight"
+                            style={{
+                                background: 'linear-gradient(135deg, var(--text-h) 0%, var(--accent) 100%)',
+                                WebkitBackgroundClip: 'text',
+                                WebkitTextFillColor: 'transparent',
+                                backgroundClip: 'text',
+                            }}
+                        >
                             Andri Creative
                         </span>
                     </Link>
 
-                    <div className="flex items-center gap-4">
+                    {/* Desktop Nav Links */}
+                    <ul className="hidden md:flex list-none m-0 p-0 items-center gap-1">
+                        {NAV_LINKS.map((link) =>
+                            link.subLinks ? (
+                                <li key={link.label} className="relative" ref={workRef}>
+                                    <button
+                                        onClick={() => setWorkOpen(v => !v)}
+                                        className="nav-pill flex items-center gap-1.5 cursor-pointer border-none bg-transparent"
+                                        style={{
+                                            color: isWorkActive ? 'var(--accent)' : 'var(--text)',
+                                            background: isWorkActive ? 'var(--accent-bg)' : 'transparent',
+                                            padding: '6px 16px',
+                                            borderRadius: '99px',
+                                            fontSize: '13.5px',
+                                            fontWeight: isWorkActive ? 600 : 500,
+                                            transition: 'all 0.25s ease',
+                                        }}
+                                    >
+                                        {link.label}
+                                        <Icon
+                                            icon="ph:caret-down-bold"
+                                            className="w-3 h-3"
+                                            style={{
+                                                opacity: 0.6,
+                                                transform: workOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                                                transition: 'transform 0.3s ease',
+                                            }}
+                                        />
+                                    </button>
 
-
-                        <ul className="hidden md:flex list-none m-0 p-0 gap-1">
-                            {NAV_LINKS.map((link) => (
-                                link.subLinks ? (
-                                    <li key={link.label} className="relative group">
-                                        <button className="navbar-link flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-[var(--text)] no-underline text-sm transition-all hover:text-[var(--text-h)] hover:bg-white/5 border-none bg-transparent cursor-pointer">
-                                            {link.label}
-                                            <Icon icon="ph:caret-down-bold" className="w-3 h-3 opacity-50 group-hover:rotate-180 transition-transform duration-300" />
-                                        </button>
-                                        
-                                        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-48 py-2 rounded-xl border border-[var(--border)] bg-[var(--bg)] shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform translate-y-2 group-hover:translate-y-0 backdrop-blur-xl">
-                                            {link.subLinks.map(sub => (
+                                    {/* Dropdown */}
+                                    <div
+                                        style={{
+                                            position: 'absolute',
+                                            top: 'calc(100% + 10px)',
+                                            left: '50%',
+                                            transform: workOpen
+                                                ? 'translateX(-50%) translateY(0) scale(1)'
+                                                : 'translateX(-50%) translateY(-8px) scale(0.96)',
+                                            opacity: workOpen ? 1 : 0,
+                                            pointerEvents: workOpen ? 'auto' : 'none',
+                                            width: '200px',
+                                            padding: '8px',
+                                            borderRadius: '16px',
+                                            border: '1px solid var(--border)',
+                                            background: theme === 'dark'
+                                                ? 'rgba(5, 12, 20, 0.92)'
+                                                : 'rgba(255, 255, 255, 0.96)',
+                                            backdropFilter: 'blur(24px) saturate(180%)',
+                                            boxShadow: theme === 'dark'
+                                                ? '0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,245,255,0.06), inset 0 1px 0 rgba(255,255,255,0.04)'
+                                                : '0 20px 60px rgba(0,0,0,0.12)',
+                                            transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+                                            zIndex: 50,
+                                        }}
+                                    >
+                                        {link.subLinks.map(sub => {
+                                            const isActive = currentPath === sub.to
+                                            return (
                                                 <Link
                                                     key={sub.to}
                                                     to={sub.to}
-                                                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--text)] hover:text-[var(--accent)] hover:bg-[var(--accent-bg)] transition-colors no-underline mx-2 rounded-lg"
-                                                    activeProps={{ className: 'flex items-center gap-3 px-4 py-2.5 text-sm transition-colors no-underline mx-2 rounded-lg text-[var(--accent)] bg-[var(--accent-bg)] font-medium' }}
+                                                    onClick={() => setWorkOpen(false)}
+                                                    style={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '10px',
+                                                        padding: '10px 14px',
+                                                        borderRadius: '10px',
+                                                        fontSize: '13.5px',
+                                                        fontWeight: isActive ? 600 : 500,
+                                                        color: isActive ? 'var(--accent)' : 'var(--text)',
+                                                        background: isActive ? 'var(--accent-bg)' : 'transparent',
+                                                        textDecoration: 'none',
+                                                        transition: 'all 0.2s ease',
+                                                    }}
+                                                    className="dropdown-item"
                                                 >
-                                                    <Icon icon={sub.icon} className="w-4 h-4 shrink-0" />
+                                                    <Icon icon={sub.icon} style={{ width: 16, height: 16, flexShrink: 0 }} />
                                                     {sub.label}
                                                 </Link>
-                                            ))}
-                                        </div>
-                                    </li>
-                                ) : (
-                                    <li key={link.to}>
-                                        <Link
-                                            to={link.to!}
-                                            className="navbar-link px-4 py-1.5 rounded-lg text-[var(--text)] no-underline text-sm transition-all hover:text-[var(--text-h)] hover:bg-white/5"
-                                            activeProps={{ className: 'navbar-link active px-4 py-1.5 rounded-lg no-underline text-sm text-[var(--accent)] bg-[var(--accent-bg)]' }}
-                                        >
-                                            {link.label}
-                                        </Link>
-                                    </li>
-                                )
-                            ))}
-                        </ul>
+                                            )
+                                        })}
+                                    </div>
+                                </li>
+                            ) : (
+                                <li key={link.to}>
+                                    <Link
+                                        to={link.to!}
+                                        style={{
+                                            display: 'inline-block',
+                                            padding: '6px 16px',
+                                            borderRadius: '99px',
+                                            fontSize: '13.5px',
+                                            fontWeight: currentPath === link.to ? 600 : 500,
+                                            color: currentPath === link.to ? 'var(--accent)' : 'var(--text)',
+                                            background: currentPath === link.to ? 'var(--accent-bg)' : 'transparent',
+                                            textDecoration: 'none',
+                                            transition: 'all 0.25s ease',
+                                            letterSpacing: '0.01em',
+                                        }}
+                                        className="nav-pill"
+                                    >
+                                        {link.label}
+                                    </Link>
+                                </li>
+                            )
+                        )}
+                    </ul>
 
-                        {/* Divider */}
-                        <div className="hidden md:block w-[1px] h-5 bg-[var(--border)]" />
+                    {/* Right Side Actions */}
+                    <div className="flex items-center gap-3">
 
-                        {/* Theme Toggle Button */}
+                        {/* Separator */}
+                        <div className="hidden md:block" style={{ width: 1, height: 20, background: 'var(--border)' }} />
+
+                        {/* Theme Toggle */}
                         <button
                             onClick={handleToggleTheme}
-                            className="theme-toggle flex items-center justify-center w-9 h-9 rounded-lg border border-[var(--border)] text-[var(--text-h)] cursor-pointer bg-white/5 hover:bg-white/10 hover:text-[var(--accent)] hover:border-[var(--accent-border)] transition-all duration-300 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
                             aria-label="Toggle Theme"
+                            className="theme-btn flex items-center justify-center cursor-pointer"
+                            style={{
+                                width: 36,
+                                height: 36,
+                                borderRadius: '10px',
+                                border: '1px solid var(--border)',
+                                background: theme === 'dark' ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
+                                color: 'var(--text-h)',
+                                transition: 'all 0.3s ease',
+                            }}
                         >
                             {theme === 'dark' ? (
-                                <Icon icon="gg:sun" className="w-[20px] h-[20px] text-amber-400 transition-transform duration-500 hover:rotate-45" />
+                                <Icon icon="ph:sun-duotone" style={{ width: 18, height: 18, color: '#fbbf24' }} />
                             ) : (
-                                <Icon icon="gg:moon" className="w-[20px] h-[20px] text-indigo-500 transition-transform duration-500 hover:-rotate-12" />
+                                <Icon icon="ph:moon-duotone" style={{ width: 18, height: 18, color: '#6366f1' }} />
                             )}
-                        </button>
-
-                        {/* Hamburger (mobile only) */}
-                        <button
-                            className="md:hidden flex flex-col gap-[5px] bg-transparent border-none cursor-pointer p-1"
-                            onClick={() => setOpen(true)}
-                            aria-label="Open menu"
-                        >
-                            <span className="block w-[22px] h-[2px] bg-[var(--text-h)] rounded-sm" />
-                            <span className="block w-[22px] h-[2px] bg-[var(--text-h)] rounded-sm" />
-                            <span className="block w-[22px] h-[2px] bg-[var(--text-h)] rounded-sm" />
                         </button>
 
                     </div>
                 </div>
             </nav>
 
-            {/* ── Sidebar Overlay ── */}
-            <div
-                className={`fixed inset-0 z-[200] md:hidden transition-all duration-300 ${open ? 'pointer-events-auto' : 'pointer-events-none'}`}
+            {/* ─────────── BOTTOM NAV BAR (Mobile only) ─────────── */}
+            <nav
+                className="md:hidden fixed bottom-0 left-0 right-0 z-[200]"
+                style={{
+                    background: theme === 'dark'
+                        ? 'rgba(3, 8, 12, 0.88)'
+                        : 'rgba(248, 250, 252, 0.92)',
+                    backdropFilter: 'blur(24px) saturate(200%)',
+                    borderTop: '1px solid var(--border)',
+                    boxShadow: theme === 'dark'
+                        ? '0 -8px 32px rgba(0,0,0,0.5), 0 -1px 0 rgba(0,245,255,0.06)'
+                        : '0 -8px 32px rgba(0,0,0,0.06)',
+                    paddingBottom: 'env(safe-area-inset-bottom)',
+                }}
             >
-                {/* Backdrop */}
-                <div
-                    className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${open ? 'opacity-100' : 'opacity-0'}`}
-                    onClick={() => setOpen(false)}
-                />
+                <div className="flex items-center justify-around px-2 py-2">
+                    {MOBILE_LINKS.map(link => {
+                        const isActive = currentPath === link.to
+                        return (
+                            <Link
+                                key={link.to}
+                                to={link.to}
+                                className="bottom-nav-item flex flex-col items-center gap-1 no-underline"
+                                style={{
+                                    textDecoration: 'none',
+                                    flex: 1,
+                                    padding: '6px 4px',
+                                    borderRadius: '12px',
+                                    transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                                    position: 'relative',
+                                }}
+                            >
+                                {/* Active indicator pill */}
+                                {isActive && (
+                                    <span
+                                        style={{
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: '50%',
+                                            transform: 'translateX(-50%)',
+                                            width: 32,
+                                            height: 3,
+                                            borderRadius: '0 0 4px 4px',
+                                            background: 'var(--accent)',
+                                            boxShadow: '0 0 8px var(--accent)',
+                                        }}
+                                    />
+                                )}
 
-                {/* Drawer Panel */}
-                <div
-                    className={`absolute top-0 right-0 h-full w-[280px] flex flex-col transition-transform duration-300 ease-in-out ${open ? 'translate-x-0' : 'translate-x-full'}`}
-                    style={{
-                        background: theme === 'dark'
-                            ? 'rgba(5, 10, 16, 0.95)'
-                            : 'rgba(255, 255, 255, 0.97)',
-                        backdropFilter: 'blur(24px)',
-                        borderLeft: '1px solid var(--border)',
-                    }}
-                >
-                    {/* Drawer Header */}
-                    <div className="flex items-center justify-between px-5 h-[60px] border-b border-[var(--border)] shrink-0">
-                        <span className="text-sm font-semibold text-[var(--text)] opacity-60 uppercase tracking-widest">
-                            Menu
-                        </span>
-                        <button
-                            onClick={() => setOpen(false)}
-                            aria-label="Close menu"
-                            className="w-8 h-8 rounded-lg border border-[var(--border)] flex items-center justify-center text-[var(--text-h)] hover:text-[var(--accent)] hover:border-[var(--accent)] bg-white/5 transition-all duration-200"
-                        >
-                            <Icon icon="ph:x-bold" className="w-4 h-4" />
-                        </button>
-                    </div>
-
-                    {/* Nav Links */}
-                    <nav className="flex flex-col gap-1 p-4 flex-1 overflow-y-auto">
-                        {NAV_LINKS.map((link) => (
-                            link.subLinks ? (
-                                <div key={link.label} className="flex flex-col gap-1 mb-1">
-                                    <div className="flex items-center gap-3 px-4 py-2 text-[var(--text)] text-sm font-bold opacity-50 uppercase tracking-widest mt-2">
-                                        <Icon icon={link.icon} className="w-4 h-4 shrink-0" />
-                                        {link.label}
-                                    </div>
-                                    <div className="flex flex-col gap-1 pl-3">
-                                        {link.subLinks.map(sub => (
-                                            <Link
-                                                key={sub.to}
-                                                to={sub.to}
-                                                className="flex items-center gap-3 px-4 py-3 rounded-xl text-[var(--text)] no-underline text-sm font-medium transition-all duration-200 hover:text-[var(--text-h)] hover:bg-white/5"
-                                                activeProps={{
-                                                    className: 'flex items-center gap-3 px-4 py-3 rounded-xl no-underline text-sm font-semibold text-[var(--accent)] bg-[var(--accent-bg)] border border-[var(--accent)]/20',
-                                                }}
-                                                onClick={() => setOpen(false)}
-                                            >
-                                                <Icon icon={sub.icon} className="w-4 h-4 shrink-0" />
-                                                {sub.label}
-                                            </Link>
-                                        ))}
-                                    </div>
-                                </div>
-                            ) : (
-                                <Link
-                                    key={link.to}
-                                    to={link.to!}
-                                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-[var(--text)] no-underline text-sm font-medium transition-all duration-200 hover:text-[var(--text-h)] hover:bg-white/5"
-                                    activeProps={{
-                                        className: 'flex items-center gap-3 px-4 py-3 rounded-xl no-underline text-sm font-semibold text-[var(--accent)] bg-[var(--accent-bg)] border border-[var(--accent)]/20',
+                                <div
+                                    style={{
+                                        width: 44,
+                                        height: 28,
+                                        borderRadius: '10px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        background: isActive ? 'var(--accent-bg)' : 'transparent',
+                                        transition: 'all 0.25s ease',
                                     }}
-                                    onClick={() => setOpen(false)}
                                 >
-                                    <Icon icon={link.icon} className="w-4 h-4 shrink-0" />
-                                    {link.label}
-                                </Link>
-                            )
-                        ))}
-                    </nav>
+                                    <Icon
+                                        icon={link.icon}
+                                        style={{
+                                            width: 22,
+                                            height: 22,
+                                            color: isActive ? 'var(--accent)' : 'var(--text)',
+                                            transition: 'all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                                            transform: isActive ? 'scale(1.15)' : 'scale(1)',
+                                        }}
+                                    />
+                                </div>
 
-                    {/* Drawer Footer — Theme Toggle */}
-                    <div className="p-4 border-t border-[var(--border)] shrink-0">
-                        <button
-                            onClick={handleToggleTheme}
-                            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-[var(--border)] text-sm font-medium text-[var(--text)] hover:text-[var(--accent)] hover:border-[var(--accent)] bg-white/5 hover:bg-white/10 transition-all duration-200 disabled:opacity-50"
+                                <span
+                                    style={{
+                                        fontSize: '10px',
+                                        fontWeight: isActive ? 700 : 500,
+                                        color: isActive ? 'var(--accent)' : 'var(--text)',
+                                        letterSpacing: isActive ? '0.04em' : '0.01em',
+                                        transition: 'all 0.25s ease',
+                                        lineHeight: 1,
+                                    }}
+                                >
+                                    {link.label}
+                                </span>
+                            </Link>
+                        )
+                    })}
+
+                    {/* Theme toggle in bottom nav */}
+                    <button
+                        onClick={handleToggleTheme}
+                        aria-label="Toggle Theme"
+                        className="flex flex-col items-center gap-1 cursor-pointer border-none bg-transparent"
+                        style={{
+                            flex: 1,
+                            padding: '6px 4px',
+                            borderRadius: '12px',
+                        }}
+                    >
+                        <div
+                            style={{
+                                width: 44,
+                                height: 28,
+                                borderRadius: '10px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                transition: 'all 0.25s ease',
+                            }}
                         >
                             {theme === 'dark' ? (
-                                <>
-                                    <Icon icon="gg:sun" className="w-4 h-4 text-amber-400 shrink-0" />
-                                    <span>Switch to Light Mode</span>
-                                </>
+                                <Icon
+                                    icon="ph:sun-duotone"
+                                    style={{ width: 22, height: 22, color: '#fbbf24' }}
+                                />
                             ) : (
-                                <>
-                                    <Icon icon="gg:moon" className="w-4 h-4 text-indigo-500 shrink-0" />
-                                    <span>Switch to Dark Mode</span>
-                                </>
+                                <Icon
+                                    icon="ph:moon-duotone"
+                                    style={{ width: 22, height: 22, color: '#6366f1' }}
+                                />
                             )}
-                        </button>
-                        <p className="text-center text-[10px] text-[var(--text)] opacity-30 mt-3 select-none">
-                            © 2025 Andri Creative
-                        </p>
-                    </div>
-
+                        </div>
+                        <span
+                            style={{
+                                fontSize: '10px',
+                                fontWeight: 500,
+                                color: 'var(--text)',
+                                letterSpacing: '0.01em',
+                                lineHeight: 1,
+                            }}
+                        >
+                            {theme === 'dark' ? 'Light' : 'Dark'}
+                        </span>
+                    </button>
                 </div>
-            </div>
+            </nav>
+
+            {/* Bottom nav spacer so content doesn't hide behind it on mobile */}
+            <div className="md:hidden" style={{ height: 72 }} />
+
+            {/* ─── Hover style injection ─── */}
+            <style>{`
+                .nav-pill:hover {
+                    color: var(--text-h) !important;
+                    background: rgba(127,127,127,0.08) !important;
+                }
+                .dropdown-item:hover {
+                    color: var(--accent) !important;
+                    background: var(--accent-bg) !important;
+                }
+                .theme-btn:hover {
+                    border-color: var(--accent-border) !important;
+                    background: var(--accent-bg) !important;
+                }
+                .bottom-nav-item:active {
+                    transform: scale(0.93);
+                }
+            `}</style>
         </>
     )
 }

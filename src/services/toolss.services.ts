@@ -45,6 +45,15 @@ const ToolsServices = {
             console.error("Error updating tool:", error);
             throw error;
         }
+    },
+    async deleteTool(id: string) {
+        try {
+            const response = await api.delete(`/tools-icon/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error("Error deleting tool:", error);
+            throw error;
+        }
     }
 }
 

@@ -196,6 +196,18 @@ export const useAdminTools = () => {
         }
     }
 
+    const handleDeleteTool = async (tool: ApiTool) => {
+        setTools(prev => prev.filter(t => t._id !== tool._id));
+
+        try {
+            await ToolsServices.deleteTool(tool._id);
+            fetchTools();
+        } catch (err: any) {
+            alert("Gagal menghapus secara permanen: " + (err.response?.data?.message || err.message));
+            fetchTools();
+        }
+    }
+
     const handleAddNewTool = (newTool: ApiTool) => {
         setTools(prev => [...prev, newTool]);
     }
@@ -218,6 +230,7 @@ export const useAdminTools = () => {
         handlePointerUp,
         handlePointerCancel,
         handleRemoveTool,
+        handleDeleteTool,
         handleAddNewTool,
         handleUpdateTool
     }

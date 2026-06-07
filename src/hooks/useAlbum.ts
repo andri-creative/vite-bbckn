@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 import pusher from "@/lib/pusher";
 import AlbumsServices from "@/services/album.services";
@@ -43,5 +43,18 @@ export const useAlbumById = (id: string) => {
             const response = await AlbumsServices.getAlbumById(id);
             return response.data;
         },
+    });
+}
+
+export const useCreateAlbum = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (data: any) => {
+            const response = await AlbumsServices.createAlbum(data);
+            return response;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["albums"] });
+        }
     });
 }

@@ -21,6 +21,19 @@ const AlbumsServices = {
             throw error;
         }
     },
+    async createAlbum(data: any) {
+        try {
+            const response = await api.post(`/album`, data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+            return response.data;
+        } catch (error) {
+            console.error("Error creating album:", error);
+            throw error;
+        }
+    }
 }
 
 export default AlbumsServices

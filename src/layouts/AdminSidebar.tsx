@@ -3,6 +3,8 @@ import { Icon } from '@iconify/react'
 
 const NAV_ITEMS = [
     { label: 'Dashboard', icon: 'ph:squares-four-duotone', to: '/admin/dashboard' },
+    { label: 'Bio', icon: 'ph:user-circle-duotone', to: '/admin/bio' },
+    { label: 'Gallery', icon: 'ph:images-duotone', to: '/admin/galely' },
     { label: 'Tools', icon: 'ph:wrench-duotone', to: '/admin/tools' },
     { label: 'Projects', icon: 'ph:folder-open-duotone', to: '/admin/projects' },
     { label: 'Experience', icon: 'ph:briefcase-duotone', to: '/admin/experience' },

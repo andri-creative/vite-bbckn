@@ -21,6 +21,35 @@ const ExperienceServices = {
         }
     },
 
+    async create(data: any) {
+        try {
+            const response = await api.post("/experience", data);
+            return response.data;
+        } catch (error) {
+            console.error("Error creating experience:", error);
+            throw error;
+        }
+    },
+
+    async update(id: string, data: any) {
+        try {
+            const response = await api.put(`/experience/${id}`, data);
+            return response.data;
+        } catch (error) {
+            console.error("Error updating experience:", error);
+            throw error;
+        }
+    },
+
+    async delete(id: string) {
+        try {
+            const response = await api.delete(`/experience/${id}`);
+            return response.data;
+        } catch (error) {
+            console.error("Error deleting experience:", error);
+            throw error;
+        }
+    }
 }
 
 

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import ExperienceServices from "../services/experience.services"
 
 const formatDate = (dateString?: string | Date) => {
@@ -25,5 +25,44 @@ export const useExperience = () => {
 
             return [];
         },
+    });
+}
+
+export const useCreateExperience = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (data: any) => {
+            const response = await ExperienceServices.create(data);
+            return response;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["experience"] });
+        }
+    });
+}
+
+export const useUpdateExperience = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async ({ id, data }: { id: string, data: any }) => {
+            const response = await ExperienceServices.update(id, data);
+            return response;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["experience"] });
+        }
+    });
+}
+
+export const useDeleteExperience = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (id: string) => {
+            const response = await ExperienceServices.delete(id);
+            return response;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["experience"] });
+        }
     });
 }

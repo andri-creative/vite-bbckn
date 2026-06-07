@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAdminTools } from '@/hooks/useAdminTools'
 import ToolsServices from '@/services/toolss.services';
+import DeleteConfirmModal from '@/components/admin/DeleteConfirmModal';
 
 // ── SVG Icon renderer (icon is raw SVG string) ─────────────────────────────
 function SvgIcon({ svg, className }: { svg: string; className?: string }) {
@@ -27,6 +28,7 @@ export default function AdminToolsPage() {
         handlePointerUp,
         handlePointerCancel,
         handleRemoveTool,
+        handleDeleteTool,
         handleAddNewTool,
         handleUpdateTool
     } = useAdminTools();
@@ -50,6 +52,10 @@ export default function AdminToolsPage() {
         setNewIcon(tool.icon);
         setIsFormOpen(true);
     };
+
+    // Delete state
+    const [toolToDelete, setToolToDelete] = useState<any | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const closeForm = () => {
         setIsFormOpen(false);
@@ -293,7 +299,7 @@ export default function AdminToolsPage() {
                                     userSelect: 'none',
                                 }}
                             >
-                                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <button 
                                         onPointerDown={(e) => e.stopPropagation()}
                                         onClick={(e) => { e.stopPropagation(); openEditForm(tool); }}
@@ -301,6 +307,14 @@ export default function AdminToolsPage() {
                                         title="Edit Tool"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                                    </button>
+                                    <button 
+                                        onPointerDown={(e) => e.stopPropagation()}
+                                        onClick={(e) => { e.stopPropagation(); setToolToDelete(tool); }}
+                                        className="w-6 h-6 rounded-full flex items-center justify-center bg-red-500/10 text-red-500 hover:bg-red-500/20"
+                                        title="Permanently Delete Tool"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                                     </button>
                                 </div>
 
@@ -354,6 +368,20 @@ export default function AdminToolsPage() {
                     </div>
                 </div>
             )}
+
+            {/* Delete Confirmation Modal */}
+            <DeleteConfirmModal
+                isOpen={!!toolToDelete}
+                toolLabel={toolToDelete?.label || ''}
+                isDeleting={isDeleting}
+                onCancel={() => setToolToDelete(null)}
+                onConfirm={async () => {
+                    setIsDeleting(true);
+                    await handleDeleteTool(toolToDelete);
+                    setIsDeleting(false);
+                    setToolToDelete(null);
+                }}
+            />
         </div>
     )
 }

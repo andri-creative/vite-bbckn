@@ -20,6 +20,9 @@ import { Route as ProjectSlugRouteImport } from './routes/project.$slug'
 import { Route as CertificateIdRouteImport } from './routes/certificate.$id'
 import { Route as AdminToolsRouteImport } from './routes/admin.tools'
 import { Route as AdminSignInRouteImport } from './routes/admin.sign-in'
+import { Route as AdminGalelyRouteImport } from './routes/admin.galely'
+import { Route as AdminExperienceRouteImport } from './routes/admin.experience'
+import { Route as AdminBioRouteImport } from './routes/admin.bio'
 
 const WorkRoute = WorkRouteImport.update({
   id: '/work',
@@ -76,6 +79,21 @@ const AdminSignInRoute = AdminSignInRouteImport.update({
   path: '/sign-in',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminGalelyRoute = AdminGalelyRouteImport.update({
+  id: '/galely',
+  path: '/galely',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminExperienceRoute = AdminExperienceRouteImport.update({
+  id: '/experience',
+  path: '/experience',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminBioRoute = AdminBioRouteImport.update({
+  id: '/bio',
+  path: '/bio',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -85,6 +103,9 @@ export interface FileRoutesByFullPath {
   '/certificates': typeof CertificatesRoute
   '/contact': typeof ContactRoute
   '/work': typeof WorkRoute
+  '/admin/bio': typeof AdminBioRoute
+  '/admin/experience': typeof AdminExperienceRoute
+  '/admin/galely': typeof AdminGalelyRoute
   '/admin/sign-in': typeof AdminSignInRoute
   '/admin/tools': typeof AdminToolsRoute
   '/certificate/$id': typeof CertificateIdRoute
@@ -98,6 +119,9 @@ export interface FileRoutesByTo {
   '/certificates': typeof CertificatesRoute
   '/contact': typeof ContactRoute
   '/work': typeof WorkRoute
+  '/admin/bio': typeof AdminBioRoute
+  '/admin/experience': typeof AdminExperienceRoute
+  '/admin/galely': typeof AdminGalelyRoute
   '/admin/sign-in': typeof AdminSignInRoute
   '/admin/tools': typeof AdminToolsRoute
   '/certificate/$id': typeof CertificateIdRoute
@@ -112,6 +136,9 @@ export interface FileRoutesById {
   '/certificates': typeof CertificatesRoute
   '/contact': typeof ContactRoute
   '/work': typeof WorkRoute
+  '/admin/bio': typeof AdminBioRoute
+  '/admin/experience': typeof AdminExperienceRoute
+  '/admin/galely': typeof AdminGalelyRoute
   '/admin/sign-in': typeof AdminSignInRoute
   '/admin/tools': typeof AdminToolsRoute
   '/certificate/$id': typeof CertificateIdRoute
@@ -127,6 +154,9 @@ export interface FileRouteTypes {
     | '/certificates'
     | '/contact'
     | '/work'
+    | '/admin/bio'
+    | '/admin/experience'
+    | '/admin/galely'
     | '/admin/sign-in'
     | '/admin/tools'
     | '/certificate/$id'
@@ -140,6 +170,9 @@ export interface FileRouteTypes {
     | '/certificates'
     | '/contact'
     | '/work'
+    | '/admin/bio'
+    | '/admin/experience'
+    | '/admin/galely'
     | '/admin/sign-in'
     | '/admin/tools'
     | '/certificate/$id'
@@ -153,6 +186,9 @@ export interface FileRouteTypes {
     | '/certificates'
     | '/contact'
     | '/work'
+    | '/admin/bio'
+    | '/admin/experience'
+    | '/admin/galely'
     | '/admin/sign-in'
     | '/admin/tools'
     | '/certificate/$id'
@@ -250,15 +286,42 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSignInRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/galely': {
+      id: '/admin/galely'
+      path: '/galely'
+      fullPath: '/admin/galely'
+      preLoaderRoute: typeof AdminGalelyRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/experience': {
+      id: '/admin/experience'
+      path: '/experience'
+      fullPath: '/admin/experience'
+      preLoaderRoute: typeof AdminExperienceRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/bio': {
+      id: '/admin/bio'
+      path: '/bio'
+      fullPath: '/admin/bio'
+      preLoaderRoute: typeof AdminBioRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
 interface AdminRouteChildren {
+  AdminBioRoute: typeof AdminBioRoute
+  AdminExperienceRoute: typeof AdminExperienceRoute
+  AdminGalelyRoute: typeof AdminGalelyRoute
   AdminSignInRoute: typeof AdminSignInRoute
   AdminToolsRoute: typeof AdminToolsRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminBioRoute: AdminBioRoute,
+  AdminExperienceRoute: AdminExperienceRoute,
+  AdminGalelyRoute: AdminGalelyRoute,
   AdminSignInRoute: AdminSignInRoute,
   AdminToolsRoute: AdminToolsRoute,
 }

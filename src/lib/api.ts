@@ -9,6 +9,10 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
     config.headers['x-timestamp'] = Date.now().toString();
+    const token = localStorage.getItem('x-cokis');
+    if (token) {
+        config.headers['x-cokis'] = token;
+    }
     return config;
 });
 

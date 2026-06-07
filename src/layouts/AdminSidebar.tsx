@@ -1,5 +1,6 @@
 import { Link, useRouterState } from '@tanstack/react-router'
 import { Icon } from '@iconify/react'
+import { useLogout } from '@/hooks/useAuth'
 
 const NAV_ITEMS = [
     { label: 'Dashboard', icon: 'ph:squares-four-duotone', to: '/admin/dashboard' },
@@ -21,6 +22,8 @@ interface AdminSidebarProps {
 export default function AdminSidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: AdminSidebarProps) {
     const routerState = useRouterState()
     const currentPath = routerState.location.pathname
+    
+    const { mutate: handleLogout, isPending: isLoggingOut } = useLogout()
 
     return (
         <>
@@ -118,15 +121,20 @@ export default function AdminSidebar({ collapsed, onToggle, mobileOpen, onMobile
                 {/* Footer */}
                 <div className={`p-2 shrink-0 ${collapsed ? '' : ''}`}
                     style={{ borderTop: '1px solid var(--border)' }}>
-                    <Link
-                        to="/admin/sign-in"
-                        className={`flex items-center gap-3 rounded-[10px] px-3 py-2.5 transition-all duration-200 ${collapsed ? 'justify-center px-0' : ''}`}
+                    <button
+                        onClick={() => handleLogout()}
+                        disabled={isLoggingOut}
+                        className={`w-full flex items-center gap-3 rounded-[10px] px-3 py-2.5 transition-all duration-200 hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed ${collapsed ? 'justify-center px-0' : ''}`}
                         style={{ color: 'var(--text)', opacity: 0.6 }}
                         title={collapsed ? 'Sign Out' : undefined}
                     >
-                        <Icon icon="ph:sign-out-duotone" className="w-[18px] h-[18px] shrink-0" />
-                        {!collapsed && <span className="text-[13.5px]">Sign Out</span>}
-                    </Link>
+                        {isLoggingOut ? (
+                            <Icon icon="line-md:loading-twotone-loop" className="w-[18px] h-[18px] shrink-0" />
+                        ) : (
+                            <Icon icon="ph:sign-out-duotone" className="w-[18px] h-[18px] shrink-0" />
+                        )}
+                        {!collapsed && <span className="text-[13.5px]">{isLoggingOut ? 'Signing out...' : 'Sign Out'}</span>}
+                    </button>
                 </div>
             </aside>
         </>

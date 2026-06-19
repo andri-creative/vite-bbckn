@@ -87,7 +87,7 @@ export default function WorkProjects() {
                     <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                         <AnimatePresence mode="popLayout">
                             {filteredProjects.map((project: any) => {
-                                const coverImage = Array.isArray(project.image) && project.image.length > 0 ? project.image[0] : (project.image || project.imageUrls?.[0] || 'https://via.placeholder.com/600');
+                                const coverImage = Array.isArray(project.imageUrls) && project.imageUrls.length > 0 ? project.imageUrls[0] : (Array.isArray(project.image) && project.image.length > 0 ? project.image[0] : (project.image || 'https://via.placeholder.com/600'));
                                 const techStack = project.techStack || [];
                                 const tools = project.tools || [];
                                 const themeColor = project.color || project.accent || '#9ca3af';

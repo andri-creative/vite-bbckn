@@ -40,7 +40,11 @@ export default function ProjectDetailPage({ slug }: ProjectDetailPageProps) {
         )
     }
 
-    const images = Array.isArray(project.image) && project.image.length > 0 ? project.image : (project.imageUrls || ['https://via.placeholder.com/600'])
+    const images = Array.isArray(project.imageUrls) && project.imageUrls.length > 0
+        ? project.imageUrls
+        : (Array.isArray(project.image) && project.image.length > 0
+            ? project.image
+            : (typeof project.image === 'string' && project.image ? [project.image] : ['https://via.placeholder.com/600']))
     const themeColor = project.color || project.accent || '#9ca3af'
     const techStack = project.techStack || project.tags || []
     const tools = project.tools || []

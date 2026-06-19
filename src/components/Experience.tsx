@@ -27,7 +27,7 @@ function useSectionProgress(ref: React.RefObject<HTMLElement | null>) {
 export default function Experience() {
     const sectionRef = useRef<HTMLElement>(null)
     const progress = useSectionProgress(sectionRef)
-    const { data: experiences = [], isLoading } = useExperience()
+    const { data: experiences = [] } = useExperience()
 
     const opacity = useTransform(progress, [0, 0.2, 0.8, 1], [0, 1, 1, 0])
     const headerY = useTransform(progress, [0, 0.25, 0.75, 1], [50, 0, 0, -50])

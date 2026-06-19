@@ -49,15 +49,19 @@ const ProjectCard = ({ project, i, opacity, progress }: { project: any, i: numbe
                     className="flex w-full h-full overflow-x-auto snap-x snap-mandatory"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
-                    {Array.isArray(project.image) && project.image.length > 0 ? project.image.map((img: string, idx: number) => (
+                    {Array.isArray(project.imageUrls) && project.imageUrls.length > 0 ? project.imageUrls.map((img: string, idx: number) => (
                         <img key={idx} src={img} alt={`${project.title} - ${idx + 1}`} className="w-full h-full object-cover shrink-0 snap-center transition-transform duration-500 group-hover:scale-105" loading="lazy" />
                     )) : (
-                        <img src={project.image || project.imageUrls?.[0] || 'https://via.placeholder.com/600'} alt={project.title} className="w-full h-full object-cover shrink-0 snap-center transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                        Array.isArray(project.image) && project.image.length > 0 ? project.image.map((img: string, idx: number) => (
+                            <img key={idx} src={img} alt={`${project.title} - ${idx + 1}`} className="w-full h-full object-cover shrink-0 snap-center transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                        )) : (
+                            <img src={(typeof project.image === 'string' && project.image) || 'https://via.placeholder.com/600'} alt={project.title} className="w-full h-full object-cover shrink-0 snap-center transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                        )
                     )}
                 </div>
-                {Array.isArray(project.image) && project.image.length > 1 && (
+                {((Array.isArray(project.imageUrls) && project.imageUrls.length > 1) || (!project.imageUrls && Array.isArray(project.image) && project.image.length > 1)) && (
                     <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-20 pointer-events-none opacity-0 group-hover/slider:opacity-100 transition-opacity duration-300">
-                        {project.image.map((_: any, idx: number) => (
+                        {(Array.isArray(project.imageUrls) && project.imageUrls.length > 0 ? project.imageUrls : project.image).map((_: any, idx: number) => (
                             <div key={idx} className="w-1.5 h-1.5 rounded-full bg-white/80 shadow-sm" />
                         ))}
                     </div>

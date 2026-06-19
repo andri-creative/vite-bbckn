@@ -5,7 +5,7 @@ import { useExperience } from '../../hooks/useExperience'
 
 export default function AboutExperience() {
     const { ref, progress } = useSectionProgress()
-    const { data: experiences = [], isLoading } = useExperience()
+    const { data: experiences = [] } = useExperience()
     const opacity = useTransform(progress, [0, 0.15, 0.85, 1], [0, 1, 1, 0])
     const y = useTransform(progress, [0, 0.2, 0.8, 1], [50, 0, 0, -50])
 

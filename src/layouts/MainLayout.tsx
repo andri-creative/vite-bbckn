@@ -3,12 +3,50 @@ import { Icon } from '@iconify/react'
 import Navbar from './Navbar'
 import FloatingRating from '../components/ui/FloatingRating'
 import { useRanting } from '../hooks/useRanting'
+import { useEffect } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import ProjectServices from '../services/project.services'
+import AlbumsServices from '../services/album.services'
+import AchievementServices from '../services/achievement.services'
 
 export default function MainLayout() {
     const location = useLocation()
     const isHomePage = location.pathname === '/'
     const isAdminPage = location.pathname.startsWith('/admin')
     const { ratings, isLoading, averageRating, submitVote } = useRanting()
+    const queryClient = useQueryClient()
+
+    useEffect(() => {
+        // Jangan lakukan prefetch jika sedang di halaman admin
+        if (isAdminPage) return
+
+        // 1. Prefetch Projects (Infinite Query - limit: 6)
+        queryClient.prefetchInfiniteQuery({
+            queryKey: ["projects"],
+            queryFn: async () => {
+                return await ProjectServices.getProjects(1, 6)
+            },
+            initialPageParam: 1,
+        }).catch(err => console.error("Prefetch projects failed", err))
+
+        // 2. Prefetch Albums (Infinite Query - limit: 20)
+        queryClient.prefetchInfiniteQuery({
+            queryKey: ["albums"],
+            queryFn: async () => {
+                return await AlbumsServices.getAlbums(1, 20)
+            },
+            initialPageParam: 1,
+        }).catch(err => console.error("Prefetch albums failed", err))
+
+        // 3. Prefetch Achievements (Regular Query)
+        queryClient.prefetchQuery({
+            queryKey: ["achievements"],
+            queryFn: async () => {
+                const response = await AchievementServices.getAll()
+                return response.data
+            }
+        }).catch(err => console.error("Prefetch achievements failed", err))
+    }, [queryClient, isAdminPage])
 
     // Admin pages: skip portfolio chrome entirely — AdminLayout handles everything
     if (isAdminPage) {

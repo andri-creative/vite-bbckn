@@ -23,6 +23,7 @@ import { Route as AdminSignInRouteImport } from './routes/admin.sign-in'
 import { Route as AdminProjectRouteImport } from './routes/admin.project'
 import { Route as AdminGalelyRouteImport } from './routes/admin.galely'
 import { Route as AdminExperienceRouteImport } from './routes/admin.experience'
+import { Route as AdminCertificateRouteImport } from './routes/admin.certificate'
 import { Route as AdminBioRouteImport } from './routes/admin.bio'
 
 const WorkRoute = WorkRouteImport.update({
@@ -95,6 +96,11 @@ const AdminExperienceRoute = AdminExperienceRouteImport.update({
   path: '/experience',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminCertificateRoute = AdminCertificateRouteImport.update({
+  id: '/certificate',
+  path: '/certificate',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminBioRoute = AdminBioRouteImport.update({
   id: '/bio',
   path: '/bio',
@@ -110,6 +116,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/work': typeof WorkRoute
   '/admin/bio': typeof AdminBioRoute
+  '/admin/certificate': typeof AdminCertificateRoute
   '/admin/experience': typeof AdminExperienceRoute
   '/admin/galely': typeof AdminGalelyRoute
   '/admin/project': typeof AdminProjectRoute
@@ -127,6 +134,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/work': typeof WorkRoute
   '/admin/bio': typeof AdminBioRoute
+  '/admin/certificate': typeof AdminCertificateRoute
   '/admin/experience': typeof AdminExperienceRoute
   '/admin/galely': typeof AdminGalelyRoute
   '/admin/project': typeof AdminProjectRoute
@@ -145,6 +153,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/work': typeof WorkRoute
   '/admin/bio': typeof AdminBioRoute
+  '/admin/certificate': typeof AdminCertificateRoute
   '/admin/experience': typeof AdminExperienceRoute
   '/admin/galely': typeof AdminGalelyRoute
   '/admin/project': typeof AdminProjectRoute
@@ -164,6 +173,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/work'
     | '/admin/bio'
+    | '/admin/certificate'
     | '/admin/experience'
     | '/admin/galely'
     | '/admin/project'
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/work'
     | '/admin/bio'
+    | '/admin/certificate'
     | '/admin/experience'
     | '/admin/galely'
     | '/admin/project'
@@ -198,6 +209,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/work'
     | '/admin/bio'
+    | '/admin/certificate'
     | '/admin/experience'
     | '/admin/galely'
     | '/admin/project'
@@ -319,6 +331,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminExperienceRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/certificate': {
+      id: '/admin/certificate'
+      path: '/certificate'
+      fullPath: '/admin/certificate'
+      preLoaderRoute: typeof AdminCertificateRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/bio': {
       id: '/admin/bio'
       path: '/bio'
@@ -331,6 +350,7 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminBioRoute: typeof AdminBioRoute
+  AdminCertificateRoute: typeof AdminCertificateRoute
   AdminExperienceRoute: typeof AdminExperienceRoute
   AdminGalelyRoute: typeof AdminGalelyRoute
   AdminProjectRoute: typeof AdminProjectRoute
@@ -340,6 +360,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminBioRoute: AdminBioRoute,
+  AdminCertificateRoute: AdminCertificateRoute,
   AdminExperienceRoute: AdminExperienceRoute,
   AdminGalelyRoute: AdminGalelyRoute,
   AdminProjectRoute: AdminProjectRoute,

@@ -21,12 +21,14 @@ export const useLogout = () => {
         onSuccess: () => {
             localStorage.removeItem('x-cokis');
             localStorage.removeItem('user');
+            localStorage.removeItem('auth-date');
             navigate({ to: '/admin/sign-in' });
         },
         onError: () => {
             // Even if the API call fails, we probably want to clear local storage and redirect
             localStorage.removeItem('x-cokis');
             localStorage.removeItem('user');
+            localStorage.removeItem('auth-date');
             navigate({ to: '/admin/sign-in' });
         }
     });

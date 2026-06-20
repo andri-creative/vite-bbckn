@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import AchievementServices from "@/services/achievement.services"
 
 export const useAchievements = () => {
@@ -43,3 +43,40 @@ export const useAchievementById = (idOrSlug: string) => {
         }
     });
 }
+
+export const useCreateAchievement = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (data: FormData) => {
+            return await AchievementServices.create(data);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["achievements"] });
+        }
+    });
+};
+
+export const useUpdateAchievement = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async ({ id, data }: { id: string; data: FormData }) => {
+            return await AchievementServices.update(id, data);
+        },
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: ["achievements"] });
+            queryClient.invalidateQueries({ queryKey: ["achievement", variables.id] });
+        }
+    });
+};
+
+export const useDeleteAchievement = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (id: string) => {
+            return await AchievementServices.delete(id);
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["achievements"] });
+        }
+    });
+};

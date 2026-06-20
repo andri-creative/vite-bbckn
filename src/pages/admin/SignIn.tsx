@@ -28,6 +28,8 @@ export default function AdminSignInPage() {
                 localStorage.setItem('x-cokis', userData['x-cokis']);
                 // Optionally save user info
                 localStorage.setItem('user', JSON.stringify(userData));
+                // Save login date for day-change detection
+                localStorage.setItem('auth-date', new Date().toDateString());
                 
                 // Redirect to admin dashboard
                 navigate({ to: '/admin/bio' });

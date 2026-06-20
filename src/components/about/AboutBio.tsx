@@ -3,6 +3,7 @@ import { motion, useTransform } from 'motion/react'
 import { useSectionProgress } from '../../hooks/useSectionProgress'
 import AutoSlider from '../ui/AutoSlider'
 import { useBio } from '../../hooks/useBio'
+import profileImg from '../../assets/andri_profile.png'
 
 export default function AboutBio() {
     const { ref, progress } = useSectionProgress()
@@ -11,7 +12,7 @@ export default function AboutBio() {
     const y = useTransform(progress, [0, 0.2, 0.8, 1], [50, 0, 0, -50])
 
     const { data: bioData } = useBio();
-    const bio = bioData?.[0] || {};
+    const bio = bioData || {};
     const BIO_STATS = bio.stats || [];
     const EDUCATION = bio.educations || [];
     const PUBLICATIONS = bio.publications || [];
@@ -28,12 +29,13 @@ export default function AboutBio() {
 
             <div className="max-w-6xl w-full relative z-10 flex flex-col gap-20">
                 {/* ── Bio + Stats ── */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 items-start">
+                    {/* Left Column — Intro */}
                     <motion.div
-                        initial={{ x: -100, opacity: 0 }}
+                        initial={{ x: -80, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ duration: 0.8, ease: 'easeOut' }}
-                        className="flex flex-col gap-7"
+                        className="lg:col-span-7 flex flex-col gap-7"
                     >
                         <div className="flex flex-col gap-3">
                             <span className="inline-flex items-center gap-2 px-3 py-1 w-fit rounded-full border border-[var(--border)] bg-[var(--accent-bg)] text-[var(--accent)] text-xs font-semibold tracking-wider uppercase select-none">
@@ -42,7 +44,7 @@ export default function AboutBio() {
                             </span>
                             <h1 className="text-4xl sm:text-5xl font-extrabold text-[var(--text-h)] tracking-tight leading-[1.1]">
                                 A brief{' '}
-                                <span className="bg-gradient-to-r from-[var(--accent)] to-violet-400 bg-clip-text text-transparent">
+                                <span className="bg-gradient-to-r from-[var(--accent)] to-violet-400 bg-clip-text text-transparent font-black">
                                     introduction
                                 </span>
                             </h1>
@@ -85,11 +87,61 @@ export default function AboutBio() {
                         </div>
                     </motion.div>
 
+                    {/* Right Column — Profile Image */}
                     <motion.div
-                        initial={{ x: 100, opacity: 0 }}
+                        initial={{ x: 80, opacity: 0 }}
                         animate={{ x: 0, opacity: 1 }}
                         transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
-                        className="grid grid-cols-2 gap-4"
+                        className="lg:col-span-5 flex flex-col gap-8 w-full"
+                    >
+                        {/* Profile Image wrapper */}
+                        <div className="relative w-full">
+                            {/* Decorative background glow */}
+                            <div className="absolute inset-0 bg-gradient-to-tr from-[var(--accent)]/15 to-violet-500/15 rounded-3xl blur-2xl transform scale-95 -z-10" />
+                            
+                            <div className="relative group overflow-hidden rounded-3xl border border-[var(--border)] bg-[var(--bg)]/40 p-3 backdrop-blur-md shadow-2xl transition-all duration-500 hover:border-[var(--accent)]/50 hover:shadow-[var(--accent)]/10">
+                                {/* Photo aspect ratio */}
+                                <div className="relative overflow-hidden rounded-2xl aspect-[4/5] sm:aspect-[3/4] lg:aspect-[4/5] w-full max-w-[420px] mx-auto">
+                                    <motion.img
+                                        src={profileImg}
+                                        alt="Andrianto Profile"
+                                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                                        loading="lazy"
+                                    />
+                                    {/* Overlay gradient */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg)]/80 via-transparent to-transparent opacity-65 pointer-events-none" />
+                                </div>
+                                
+                                {/* Decorative badge overlay on the photo */}
+                                <div className="absolute bottom-6 left-6 right-6 flex items-center justify-between bg-[var(--bg)]/70 backdrop-blur-md border border-[var(--border)] px-4 py-3 rounded-xl shadow-lg">
+                                    <div className="flex items-center gap-2.5">
+                                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                                        <div className="flex flex-col">
+                                            <span className="text-xs font-semibold text-[var(--text-h)] leading-tight">Andrianto</span>
+                                            <span className="text-[10px] text-[var(--text)] opacity-60">Full-Stack Developer</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-[var(--text)] hover:text-[var(--accent)] transition-colors">
+                                            <Icon icon="ph:github-logo-bold" className="w-4 h-4" />
+                                        </a>
+                                        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-[var(--text)] hover:text-[var(--accent)] transition-colors">
+                                            <Icon icon="ph:linkedin-logo-bold" className="w-4 h-4" />
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
+
+                {/* Stats spanning full width in a single horizontal row */}
+                {BIO_STATS.length > 0 && (
+                    <motion.div
+                        initial={{ y: 40, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 0.8, ease: 'easeOut', delay: 0.3 }}
+                        className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 w-full"
                     >
                         {BIO_STATS.map((stat: any) => (
                             <div
@@ -99,11 +151,11 @@ export default function AboutBio() {
                                 <span className="text-3xl sm:text-4xl font-extrabold text-[var(--text-h)] group-hover:text-[var(--accent)] transition-colors duration-300">
                                     {stat.value}
                                 </span>
-                                <span className="text-xs text-[var(--text)] opacity-50 font-medium tracking-wide">{stat.label}</span>
+                                <span className="text-xs sm:text-sm text-[var(--text)] opacity-50 font-medium tracking-wide">{stat.label}</span>
                             </div>
                         ))}
                     </motion.div>
-                </div>
+                )}
 
                 {/* ── Education + Publications ── */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-stretch">

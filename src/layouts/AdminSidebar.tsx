@@ -9,6 +9,7 @@ const NAV_ITEMS = [
     { label: 'Tools', icon: 'ph:wrench-duotone', to: '/admin/tools' },
     { label: 'Projects', icon: 'ph:folder-open-duotone', to: '/admin/project' },
     { label: 'Experience', icon: 'ph:briefcase-duotone', to: '/admin/experience' },
+    { label: 'Certificates', icon: 'ph:seal-check-duotone', to: '/admin/certificate' },
     { label: 'Settings', icon: 'ph:gear-six-duotone', to: '/admin/settings' },
 ]
 

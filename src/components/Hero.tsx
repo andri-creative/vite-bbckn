@@ -22,7 +22,7 @@ export default function Hero({ onScrollDown }: HeroProps) {
     return (
         <div
             className="grid-bg relative w-full overflow-hidden flex items-center justify-center"
-            style={{ height: 'calc(100vh - 60px)', minHeight: 'calc(100vh - 60px)' }}
+            style={{ height: '100vh', minHeight: '100vh' }}
         >
             <GridBeams />
 

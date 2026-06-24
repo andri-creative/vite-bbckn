@@ -23,7 +23,8 @@ const NAV_LINKS = [
 const MOBILE_LINKS = [
     { to: '/', label: 'Home', icon: 'ph:house-duotone' },
     { to: '/about', label: 'About', icon: 'ph:user-duotone' },
-    { to: '/work', label: 'Work', icon: 'ph:squares-four-duotone' },
+    { to: '/work', label: 'Projects', icon: 'ph:squares-four-duotone' },
+    { to: '/certificates', label: 'Certs', icon: 'ph:seal-check-duotone' },
     { to: '/album', label: 'Gallery', icon: 'ph:images-duotone' },
     { to: '/contact', label: 'Contact', icon: 'ph:envelope-duotone' },
 ]
@@ -110,7 +111,7 @@ export default function Navbar() {
         <>
             {/* ─────────── TOP NAVBAR (Desktop) ─────────── */}
             <nav
-                className={`navbar sticky top-0 z-[100] w-full transition-all duration-500 ${
+                className={`navbar fixed top-0 left-0 right-0 z-[100] w-full transition-all duration-500 ${
                     scrolled ? 'nav-scrolled' : 'nav-top'
                 }`}
                 style={{
@@ -386,58 +387,8 @@ export default function Navbar() {
                             </Link>
                         )
                     })}
-
-                    {/* Theme toggle in bottom nav */}
-                    <button
-                        onClick={handleToggleTheme}
-                        aria-label="Toggle Theme"
-                        className="flex flex-col items-center gap-1 cursor-pointer border-none bg-transparent"
-                        style={{
-                            flex: 1,
-                            padding: '6px 4px',
-                            borderRadius: '12px',
-                        }}
-                    >
-                        <div
-                            style={{
-                                width: 44,
-                                height: 28,
-                                borderRadius: '10px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                transition: 'all 0.25s ease',
-                            }}
-                        >
-                            {theme === 'dark' ? (
-                                <Icon
-                                    icon="ph:sun-duotone"
-                                    style={{ width: 22, height: 22, color: '#fbbf24' }}
-                                />
-                            ) : (
-                                <Icon
-                                    icon="ph:moon-duotone"
-                                    style={{ width: 22, height: 22, color: '#6366f1' }}
-                                />
-                            )}
-                        </div>
-                        <span
-                            style={{
-                                fontSize: '10px',
-                                fontWeight: 500,
-                                color: 'var(--text)',
-                                letterSpacing: '0.01em',
-                                lineHeight: 1,
-                            }}
-                        >
-                            {theme === 'dark' ? 'Light' : 'Dark'}
-                        </span>
-                    </button>
                 </div>
             </nav>
-
-            {/* Bottom nav spacer so content doesn't hide behind it on mobile */}
-            <div className="md:hidden" style={{ height: 72 }} />
 
             {/* ─── Hover style injection ─── */}
             <style>{`

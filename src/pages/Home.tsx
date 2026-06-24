@@ -26,7 +26,7 @@ export default function Home() {
                 }`}
             style={
                 scrollLocked
-                    ? { height: 'calc(100vh - 60px)', overflow: 'hidden' }
+                    ? { height: '100vh', overflow: 'hidden' }
                     : {}
             }
         >

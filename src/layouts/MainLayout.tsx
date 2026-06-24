@@ -81,6 +81,9 @@ export default function MainLayout() {
                 </footer>
             )}
             <FloatingRating submitVote={submitVote} averageRating={averageRating} ratings={ratings} />
+
+            {/* Bottom nav spacer so content doesn't hide behind it on mobile */}
+            <div className="md:hidden" style={{ height: 72 }} />
         </div>
     )
 }

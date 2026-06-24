@@ -104,7 +104,7 @@ export default function WorkProjects() {
                                         style={{ '--theme-color': themeColor } as any}
                                     >
                                         {/* Floating Inner Image Frame */}
-                                        <div className="relative h-32 sm:h-40 p-2 pb-0">
+                                        <div className="relative h-48 sm:h-52 p-2 pb-0">
                                             <div className="relative w-full h-full rounded-[14px] overflow-hidden shadow-xl">
                                                 <img
                                                     src={coverImage}

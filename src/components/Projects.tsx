@@ -44,7 +44,7 @@ const ProjectCard = ({ project, i, opacity, progress }: { project: any, i: numbe
             } as any}
         >
             {/* Image Container */}
-            <div className="relative w-full h-40 sm:h-44 overflow-hidden border-b border-[var(--border)] group/slider">
+            <div className="relative w-full h-52 sm:h-48 md:h-52 lg:h-56 xl:h-60 overflow-hidden border-b border-[var(--border)] group/slider">
                 <div
                     className="flex w-full h-full overflow-x-auto snap-x snap-mandatory"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
@@ -182,7 +182,7 @@ export default function Projects() {
                 </motion.div>
 
                 {/* Projects Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
                     {projects.map((project: any, i: number) => (
                         <ProjectCard key={project._id || project.title} project={project} i={i} opacity={opacity} progress={progress} />
                     ))}

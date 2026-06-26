@@ -100,7 +100,7 @@ export default function WorkProjects() {
                                         exit={{ opacity: 0, scale: 0.9, filter: 'blur(10px)' }}
                                         transition={{ duration: 0.5, type: 'spring', bounce: 0.3 }}
                                         key={project.slug || project._id}
-                                        className={`group relative flex flex-col rounded-3xl bg-[var(--accent-bg)]/30 backdrop-blur-xl border border-[var(--border)] overflow-hidden transition-all duration-700 hover:-translate-y-3 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.3)] z-10`}
+                                        className={`group relative flex flex-col h-full rounded-3xl bg-[var(--accent-bg)]/30 backdrop-blur-xl border border-[var(--border)] overflow-hidden transition-all duration-700 hover:-translate-y-3 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.3)] z-10`}
                                         style={{ '--theme-color': themeColor } as any}
                                     >
                                         {/* Floating Inner Image Frame */}
@@ -179,7 +179,7 @@ export default function WorkProjects() {
                                                 </div>
                                             </div>
 
-                                            <p className="text-[var(--text)] opacity-70 text-sm leading-relaxed flex-1 font-medium">
+                                            <p className="text-[var(--text)] opacity-70 text-sm leading-relaxed flex-1 font-medium line-clamp-3">
                                                 {project.summary}
                                             </p>
 

@@ -35,7 +35,7 @@ const ProjectCard = ({ project, i, opacity, progress }: { project: any, i: numbe
 
     return (
         <motion.div
-            className={`group relative flex flex-col rounded-2xl border bg-[var(--accent-bg)]/30 backdrop-blur-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden`}
+            className={`group relative flex flex-col h-full rounded-2xl border bg-[var(--accent-bg)]/30 backdrop-blur-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden`}
             style={{
                 opacity,
                 y,
@@ -104,7 +104,7 @@ const ProjectCard = ({ project, i, opacity, progress }: { project: any, i: numbe
                         </div>
                     )}
                 </div>
-                <p className="text-[var(--text)] opacity-75 text-sm leading-relaxed mb-4 flex-1">{project.summary}</p>
+                <p className="text-[var(--text)] opacity-75 text-sm leading-relaxed mb-4 flex-1 line-clamp-3">{project.summary}</p>
                 {project.tools?.length > 0 && (
                     <div className="flex flex-wrap items-center gap-1.5 mb-5 mt-auto">
                         {project.tools.map((item: any, index: number) => (
@@ -156,7 +156,7 @@ export default function Projects() {
     const headerY = useTransform(progress, [0, 0.25, 0.75, 1], [50, 0, 0, -50])
 
     const { data } = useProjects(3);
-    const projects = data?.pages.flatMap(page => page.data) || [];
+    const projects = (data?.pages.flatMap(page => page.data) || []).slice(0, 3);
 
     return (
         <section ref={sectionRef} className="relative bg-[var(--bg)] border-t border-[var(--border)] px-6 py-20 flex flex-col justify-center items-center z-10 overflow-hidden w-full min-h-screen">

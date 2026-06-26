@@ -21,7 +21,7 @@ export const useProjects = (limit: number = 20) => {
     }, [queryClient]);
 
     return useInfiniteQuery({
-        queryKey: ["projects"],
+        queryKey: ["projects", limit],
         queryFn: async ({ pageParam = 1 }) => {
             const response = await ProjectServices.getProjects(pageParam, limit);
             return response; // Return the full response which includes data and pagination

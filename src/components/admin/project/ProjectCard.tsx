@@ -19,7 +19,7 @@ export default function ProjectCard({ project, onEdit, onDelete }: ProjectCardPr
 
     return (
         <div 
-            className="rounded-2xl overflow-hidden border flex flex-col transition-all duration-200 hover:-translate-y-1 shadow-sm"
+            className="rounded-2xl overflow-hidden border flex flex-col h-full transition-all duration-200 hover:-translate-y-1 shadow-sm"
             style={{ background: 'var(--accent-bg)', borderColor: 'var(--border)' }}
         >
             {/* Cover image container */}

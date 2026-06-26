@@ -14,9 +14,10 @@ const initialFormState = {
     content: '',
     current: false,
     responsibilities: '',
-    type: 'Full-time',
+    type: 'Penuh Waktu',
     mode: 'WFO',
-    status: 'active'
+    status: 'active',
+    sort: 1
 };
 
 export default function ExperienceAdmin() {
@@ -71,9 +72,10 @@ export default function ExperienceAdmin() {
                 content: fullExp.content || exp.content || '',
                 current: fullExp.current ?? exp.current ?? false,
                 responsibilities: (fullExp.responsibilities || exp.responsibilities || []).join(', '),
-                type: fullExp.type || exp.type || 'Full-time',
+                type: fullExp.type || exp.type || 'Penuh Waktu',
                 mode: fullExp.mode || exp.mode || 'WFO',
-                status: fullExp.status || exp.status || 'active'
+                status: fullExp.status || exp.status || 'active',
+                sort: fullExp.sort ?? exp.sort ?? 1
             });
             setEditId(exp._id);
             setIsFormOpen(true);
@@ -92,9 +94,10 @@ export default function ExperienceAdmin() {
                 content: exp.content || '',
                 current: exp.current || false,
                 responsibilities: (exp.responsibilities || []).join(', '),
-                type: exp.type || 'Full-time',
+                type: exp.type || 'Penuh Waktu',
                 mode: exp.mode || 'WFO',
-                status: exp.status || 'active'
+                status: exp.status || 'active',
+                sort: exp.sort ?? 1
             });
             setEditId(exp._id);
             setIsFormOpen(true);
@@ -115,8 +118,9 @@ export default function ExperienceAdmin() {
 
         const payload = {
             ...formData,
-            endDate: formData.current ? null : formData.endDate,
+            endDate: formData.current ? "" : (formData.endDate || ""),
             responsibilities: responsibilitiesArray,
+            sort: Number(formData.sort) || 1,
         };
 
         try {
@@ -131,7 +135,10 @@ export default function ExperienceAdmin() {
             resetForm();
             setTimeout(() => setSuccessMsg(''), 5000);
         } catch (error: any) {
-            setErrorMsg('Terjadi kesalahan: ' + (error.response?.data?.message || error.message));
+            const serverMessage = error.response?.data?.message || 
+                                  (error.response?.data ? (typeof error.response.data === 'object' ? JSON.stringify(error.response.data) : String(error.response.data)) : null) || 
+                                  error.message;
+            setErrorMsg('Terjadi kesalahan: ' + serverMessage);
         }
     };
 
@@ -201,17 +208,17 @@ export default function ExperienceAdmin() {
                         <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-h)' }}>Company Name</label>
-                                <input type="text" name="companyName" value={formData.companyName} onChange={handleChange} required className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }} />
+                                <input type="text" name="companyName" value={formData.companyName ?? ''} onChange={handleChange} required className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }} />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-h)' }}>Position</label>
-                                <input type="text" name="position" value={formData.position} onChange={handleChange} required className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }} />
+                                <input type="text" name="position" value={formData.position ?? ''} onChange={handleChange} required className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }} />
                             </div>
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-h)' }}>Start Date</label>
-                            <input type="date" name="startDate" value={formData.startDate} onChange={handleChange} required className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }} />
+                            <input type="date" name="startDate" value={formData.startDate ?? ''} onChange={handleChange} required className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }} />
                         </div>
                         <div>
                             <div className="flex justify-between items-center mb-1">
@@ -221,31 +228,32 @@ export default function ExperienceAdmin() {
                                     <span>Current</span>
                                 </label>
                             </div>
-                            <input type="date" name="endDate" value={formData.endDate} onChange={handleChange} disabled={formData.current} required={!formData.current} className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2 disabled:opacity-50" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }} />
+                            <input type="date" name="endDate" value={formData.endDate ?? ''} onChange={handleChange} disabled={formData.current} required={!formData.current} className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2 disabled:opacity-50" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }} />
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-h)' }}>Location</label>
-                            <input type="text" name="location" value={formData.location} onChange={handleChange} placeholder="e.g. Remote, Jakarta" className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }} />
+                            <input type="text" name="location" value={formData.location ?? ''} onChange={handleChange} placeholder="e.g. Remote, Jakarta" className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }} />
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-h)' }}>Icon (Iconify)</label>
-                            <input type="text" name="icon" value={formData.icon} onChange={handleChange} placeholder="e.g. ph:laptop-bold" className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }} />
+                            <input type="text" name="icon" value={formData.icon ?? ''} onChange={handleChange} placeholder="e.g. ph:laptop-bold" className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }} />
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-h)' }}>Type</label>
-                            <select name="type" value={formData.type} onChange={handleChange} className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}>
-                                <option value="Full-time">Full-time</option>
-                                <option value="Part-time">Part-time</option>
+                            <select name="type" value={formData.type ?? 'Penuh Waktu'} onChange={handleChange} className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}>
+                                <option value="Penuh Waktu">Penuh Waktu</option>
+                                <option value="Magang">Magang</option>
+                                <option value="Kontrak">Kontrak</option>
                                 <option value="Freelance">Freelance</option>
-                                <option value="Contract">Contract</option>
-                                <option value="Internship">Internship</option>
+                                <option value="Wirausaha">Wirausaha</option>
+                                <option value="Lainnya">Lainnya</option>
                             </select>
                         </div>
                         <div>
                             <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-h)' }}>Mode</label>
-                            <select name="mode" value={formData.mode} onChange={handleChange} className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}>
+                            <select name="mode" value={formData.mode ?? 'WFO'} onChange={handleChange} className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}>
                                 <option value="WFO">WFO</option>
                                 <option value="WFH">WFH</option>
                                 <option value="Hybrid">Hybrid</option>
@@ -253,9 +261,13 @@ export default function ExperienceAdmin() {
                             </select>
                         </div>
 
-                        <div className="md:col-span-2">
+                        <div>
+                            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-h)' }}>Sort Order</label>
+                            <input type="number" name="sort" value={formData.sort ?? ''} onChange={handleChange} min={1} required className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }} />
+                        </div>
+                        <div>
                             <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-h)' }}>Status</label>
-                            <select name="status" value={formData.status} onChange={handleChange} className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}>
+                            <select name="status" value={formData.status ?? 'active'} onChange={handleChange} className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}>
                                 <option value="active">Active</option>
                                 <option value="inactive">Inactive</option>
                             </select>
@@ -263,12 +275,12 @@ export default function ExperienceAdmin() {
 
                         <div className="md:col-span-2">
                             <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-h)' }}>Responsibilities (comma separated)</label>
-                            <input type="text" name="responsibilities" value={formData.responsibilities} onChange={handleChange} placeholder="e.g. React, TypeScript, UI Design" className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }} />
+                            <input type="text" name="responsibilities" value={formData.responsibilities ?? ''} onChange={handleChange} placeholder="e.g. React, TypeScript, UI Design" className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }} />
                         </div>
 
                         <div className="md:col-span-2">
                             <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-h)' }}>Summary</label>
-                            <textarea name="summary" value={formData.summary} onChange={handleChange} rows={2} className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }} />
+                            <textarea name="summary" value={formData.summary ?? ''} onChange={handleChange} rows={2} className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2" style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }} />
                         </div>
 
                         <div className="md:col-span-2">
@@ -304,7 +316,7 @@ export default function ExperienceAdmin() {
                             <div key={exp._id} className="p-4 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-all" style={{ background: 'var(--accent-bg)', border: '1px solid var(--border)' }}>
                                 <div>
                                     <h3 className="font-bold text-base" style={{ color: 'var(--text-h)' }}>{exp.position}</h3>
-                                    <p className="text-sm font-medium" style={{ color: 'var(--accent)' }}>{exp.companyName} • {exp.type}</p>
+                                    <p className="text-sm font-medium" style={{ color: 'var(--accent)' }}>{exp.companyName} • {exp.type} • Sort: {exp.sort}</p>
                                     <p className="text-xs mt-1" style={{ color: 'var(--text)', opacity: 0.7 }}>{exp.period} • {exp.location}</p>
                                 </div>
                                 <div className="flex items-center gap-2">

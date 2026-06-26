@@ -1,5 +1,6 @@
 import { Icon } from '@iconify/react';
 import type { Project } from './types';
+import { resolveThemeColor } from '../../../lib/utils';
 
 interface ProjectCardProps {
     project: Project;
@@ -15,7 +16,7 @@ export default function ProjectCard({ project, onEdit, onDelete }: ProjectCardPr
             : (typeof project.image === 'string' && project.image
                 ? project.image
                 : ''));
-    const themeColor = project.color || project.accent || '#9ca3af';
+    const themeColor = resolveThemeColor(project.color, project.accent);
 
     return (
         <div 

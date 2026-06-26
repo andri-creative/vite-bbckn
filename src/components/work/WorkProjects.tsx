@@ -4,6 +4,7 @@ import { motion, useTransform, AnimatePresence } from 'motion/react'
 import { useSectionProgress } from '../../hooks/useSectionProgress'
 import { useProjects } from '../../hooks/useProject'
 import { Link } from '@tanstack/react-router'
+import { resolveThemeColor } from '../../lib/utils'
 
 export default function WorkProjects() {
     const { ref, progress } = useSectionProgress()
@@ -90,7 +91,7 @@ export default function WorkProjects() {
                                 const coverImage = Array.isArray(project.imageUrls) && project.imageUrls.length > 0 ? project.imageUrls[0] : (Array.isArray(project.image) && project.image.length > 0 ? project.image[0] : (project.image || 'https://via.placeholder.com/600'));
                                 const techStack = project.techStack || [];
                                 const tools = project.tools || [];
-                                const themeColor = project.color || project.accent || '#9ca3af';
+                                const themeColor = resolveThemeColor(project.color, project.accent);
 
                                 return (
                                     <motion.div
@@ -100,8 +101,11 @@ export default function WorkProjects() {
                                         exit={{ opacity: 0, scale: 0.9, filter: 'blur(10px)' }}
                                         transition={{ duration: 0.5, type: 'spring', bounce: 0.3 }}
                                         key={project.slug || project._id}
-                                        className={`group relative flex flex-col h-full rounded-3xl bg-[var(--accent-bg)]/30 backdrop-blur-xl border border-[var(--border)] overflow-hidden transition-all duration-700 hover:-translate-y-3 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.3)] z-10`}
-                                        style={{ '--theme-color': themeColor } as any}
+                                        className={`group relative flex flex-col h-full rounded-3xl bg-[var(--accent-bg)]/30 backdrop-blur-xl border border-[var(--theme-border)] hover:border-[var(--theme-color)] overflow-hidden transition-all duration-700 hover:-translate-y-3 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.3)] z-10`}
+                                        style={{ 
+                                            '--theme-color': themeColor,
+                                            '--theme-border': `${themeColor}33`
+                                        } as any}
                                     >
                                         {/* Floating Inner Image Frame */}
                                         <div className="relative h-48 sm:h-52 p-2 pb-0">

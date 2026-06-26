@@ -1,6 +1,7 @@
 import { Icon } from '@iconify/react'
 import { Link } from '@tanstack/react-router'
 import { useProjects } from '../hooks/useProject'
+import { resolveThemeColor } from '../lib/utils'
 import { motion, useMotionValue, useTransform, MotionValue } from 'motion/react'
 import { useRef, useEffect } from 'react'
 
@@ -31,16 +32,16 @@ const ProjectCard = ({ project, i, opacity, progress }: { project: any, i: numbe
         [70, 0, 0, -70]
     );
 
-    const themeColor = project.color || project.accent || '#9ca3af';
+    const themeColor = resolveThemeColor(project.color, project.accent);
 
     return (
         <motion.div
-            className={`group relative flex flex-col h-full rounded-2xl border bg-[var(--accent-bg)]/30 backdrop-blur-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden`}
+            className={`group relative flex flex-col h-full rounded-2xl border border-[var(--theme-border)] hover:border-[var(--theme-color)] bg-[var(--accent-bg)]/30 backdrop-blur-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden`}
             style={{
                 opacity,
                 y,
                 '--theme-color': themeColor,
-                borderColor: `${themeColor}33`
+                '--theme-border': `${themeColor}33`
             } as any}
         >
             {/* Image Container */}

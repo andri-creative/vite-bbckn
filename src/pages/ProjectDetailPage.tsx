@@ -5,6 +5,7 @@ import { Link } from '@tanstack/react-router'
 import { GitHub } from '@/components/icons/GitHub'
 import { Situs } from '@/components/icons/Situs'
 import { useProjectById } from '../hooks/useProject'
+import { resolveThemeColor } from '../lib/utils'
 
 interface ProjectDetailPageProps {
     slug: string
@@ -45,7 +46,7 @@ export default function ProjectDetailPage({ slug }: ProjectDetailPageProps) {
         : (Array.isArray(project.image) && project.image.length > 0
             ? project.image
             : (typeof project.image === 'string' && project.image ? [project.image] : ['https://via.placeholder.com/600']))
-    const themeColor = project.color || project.accent || '#9ca3af'
+    const themeColor = resolveThemeColor(project.color, project.accent)
     const techStack = project.techStack || project.tags || []
     const tools = project.tools || []
 

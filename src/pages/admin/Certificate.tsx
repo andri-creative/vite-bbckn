@@ -12,77 +12,16 @@ import { compressImage, slugify } from '@/components/admin/project/utils';
 const initialFormState = {
     title: '',
     slug: '',
-    category: 'Coding',
+    category: 'Sertifikat',
     description: '',
     issuer: '',
     issueDate: '',
-    level: 'Intermediate',
-    url: '',
-    pinned: false,
-    tags: [] as string[]
+    level: 'Nasional',
+    pinned: false,  
+    tags: [] as string[],
+    label: '',
+    status: true
 };
-
-interface CustomSelectProps {
-    label: string;
-    value: string;
-    options: string[];
-    onChange: (value: string) => void;
-}
-
-function CustomSelect({ label, value, options, onChange }: CustomSelectProps) {
-    const [isOpen, setIsOpen] = useState(false);
-
-    return (
-        <div className="relative">
-            <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-h)' }}>{label}</label>
-            <button
-                type="button"
-                onClick={() => setIsOpen(!isOpen)}
-                className="w-full px-4 py-2 rounded-xl text-sm text-left flex items-center justify-between border cursor-pointer focus:ring-2 focus:ring-amber-500/50 focus:outline-none transition-all duration-150"
-                style={{ background: 'var(--bg)', borderColor: 'var(--border)', color: 'var(--text)', minHeight: '38px' }}
-            >
-                <span className="truncate">{value}</span>
-                <Icon
-                    icon="ph:caret-down-bold"
-                    className={`w-3.5 h-3.5 transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-180' : ''}`}
-                    style={{ color: 'var(--text)', opacity: 0.6 }}
-                />
-            </button>
-
-            {isOpen && (
-                <>
-                    <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-                    <ul
-                        className="absolute left-0 right-0 mt-1.5 rounded-xl border p-1 shadow-xl z-50 flex flex-col gap-0.5 max-h-48 overflow-y-auto"
-                        style={{ background: 'var(--bg)', borderColor: 'var(--border)' }}
-                    >
-                        {options.map((option) => (
-                            <li key={option}>
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        onChange(option);
-                                        setIsOpen(false);
-                                    }}
-                                    className="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold hover:bg-amber-500/10 hover:text-amber-500 transition-colors cursor-pointer flex items-center justify-between"
-                                    style={{
-                                        color: value === option ? 'var(--accent)' : 'var(--text)',
-                                        background: value === option ? 'var(--accent-bg)' : 'transparent'
-                                    }}
-                                >
-                                    <span>{option}</span>
-                                    {value === option && (
-                                        <Icon icon="ph:check-bold" className="w-3.5 h-3.5 shrink-0" />
-                                    )}
-                                </button>
-                            </li>
-                        ))}
-                    </ul>
-                </>
-            )}
-        </div>
-    );
-}
 
 export default function CertificateAdmin() {
     const { data: achievements, isLoading } = useAchievements();
@@ -179,14 +118,15 @@ export default function CertificateAdmin() {
         setFormData({
             title: cert.title || '',
             slug: cert.slug || '',
-            category: cert.category || 'Coding',
+            category: cert.category || 'Sertifikat',
             description: cert.description || '',
             issuer: cert.issuer || '',
             issueDate: cert.issueDate || '',
-            level: cert.level || 'Intermediate',
-            url: cert.url || '',
+            level: cert.level || 'Nasional',
             pinned: cert.pinned ?? false,
-            tags: Array.isArray(cert.tags) ? cert.tags : []
+            tags: Array.isArray(cert.tags) ? cert.tags : [],
+            label: cert.label || '',
+            status: cert.status ?? true
         });
         setExistingImage(cert.image || null);
         setSelectedFile(null);
@@ -213,8 +153,13 @@ export default function CertificateAdmin() {
         formDataPayload.append('issuer', formData.issuer);
         formDataPayload.append('issueDate', formData.issueDate);
         formDataPayload.append('level', formData.level);
-        formDataPayload.append('url', formData.url);
-        formDataPayload.append('pinned', String(formData.pinned));
+        if (formData.label) {
+            formDataPayload.append('label', formData.label);
+        }
+        const pinnedValue = (formData.pinned === undefined || formData.pinned === null) ? false : formData.pinned;
+        const statusValue = (formData.status === undefined || formData.status === null) ? true : formData.status;
+        formDataPayload.append('pinned', String(pinnedValue));
+        formDataPayload.append('status', String(statusValue));
 
         // Append tags
         formData.tags.forEach(tag => formDataPayload.append('tags', tag));
@@ -240,6 +185,7 @@ export default function CertificateAdmin() {
             resetForm();
             setTimeout(() => setSuccessMsg(''), 5000);
         } catch (error: any) {
+            console.error("Gagal menyimpan sertifikat. Detail error backend:", error.response?.data || error);
             setErrorMsg('Gagal menyimpan sertifikat: ' + (error.response?.data?.message || error.message));
         } finally {
             setIsCompressing(false);
@@ -383,30 +329,70 @@ export default function CertificateAdmin() {
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
-                                <CustomSelect
-                                    label="Category *"
-                                    value={formData.category}
-                                    options={['Coding', 'Design', 'Cloud', 'Security', 'Management']}
-                                    onChange={(val) => setFormData(prev => ({ ...prev, category: val }))}
-                                />
-                                <CustomSelect
-                                    label="Level *"
-                                    value={formData.level}
-                                    options={['Beginner', 'Intermediate', 'Advanced', 'Expert']}
-                                    onChange={(val) => setFormData(prev => ({ ...prev, level: val }))}
-                                />
+                                <div>
+                                    <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-h)' }}>Category *</label>
+                                    <input
+                                        type="text"
+                                        name="category"
+                                        value={formData.category}
+                                        onChange={handleChange}
+                                        required
+                                        className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2"
+                                        style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
+                                        placeholder="e.g. Coding, Sertifikat, dll."
+                                    />
+                                    <div className="flex flex-wrap gap-1 mt-1.5">
+                                        {['Sertifikat', 'Penghargaan', 'Lainnya'].map(opt => (
+                                            <button
+                                                type="button"
+                                                key={opt}
+                                                onClick={() => setFormData(prev => ({ ...prev, category: opt }))}
+                                                className="text-[10px] px-2 py-0.5 rounded border border-dashed hover:bg-amber-500/10 hover:text-amber-500 transition-colors cursor-pointer"
+                                                style={{ borderColor: 'var(--border)', color: 'var(--text)', opacity: formData.category === opt ? 1 : 0.6 }}
+                                            >
+                                                {opt}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-h)' }}>Level *</label>
+                                    <input
+                                        type="text"
+                                        name="level"
+                                        value={formData.level}
+                                        onChange={handleChange}
+                                        required
+                                        className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2"
+                                        style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
+                                        placeholder="e.g. Beginner, Internasional, dll."
+                                    />
+                                    <div className="flex flex-wrap gap-1 mt-1.5">
+                                        {['Nasional', 'Internasional', 'Regional'].map(opt => (
+                                            <button
+                                                type="button"
+                                                key={opt}
+                                                onClick={() => setFormData(prev => ({ ...prev, level: opt }))}
+                                                className="text-[10px] px-2 py-0.5 rounded border border-dashed hover:bg-amber-500/10 hover:text-amber-500 transition-colors cursor-pointer"
+                                                style={{ borderColor: 'var(--border)', color: 'var(--text)', opacity: formData.level === opt ? 1 : 0.6 }}
+                                            >
+                                                {opt}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-h)' }}>Verification Link (URL)</label>
+                                <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-h)' }}>Credential Label (e.g. Cloud Architecture)</label>
                                 <input
-                                    type="url"
-                                    name="url"
-                                    value={formData.url}
+                                    type="text"
+                                    name="label"
+                                    value={formData.label}
                                     onChange={handleChange}
                                     className="w-full px-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2"
                                     style={{ background: 'var(--bg)', border: '1px solid var(--border)', color: 'var(--text)' }}
-                                    placeholder="https://credentials.example.com/verify/..."
+                                    placeholder="e.g. Cloud Architecture"
                                 />
                             </div>
 
@@ -427,7 +413,7 @@ export default function CertificateAdmin() {
 
                         {/* COLUMN 2: Image Uploader, Tags, Description */}
                         <div className="flex flex-col gap-6">
-                            {/* Image Uploader (Exactly 1 Image) */}
+                            {/* Image Uploader */}
                             <div>
                                 <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-h)' }}>Certificate Image (1 Image Only) *</label>
 
